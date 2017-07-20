@@ -87,3 +87,4 @@ $RECYCLE.BIN/
 *.pdb
 *.pyc
 Release/MFCApplication5.exe
+*.idb

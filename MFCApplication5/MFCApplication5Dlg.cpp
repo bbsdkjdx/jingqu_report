@@ -52,6 +52,7 @@ END_MESSAGE_MAP()
 CMFCApplication5Dlg::CMFCApplication5Dlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCApplication5Dlg::IDD, pParent)
 {
+
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
@@ -76,6 +77,7 @@ END_MESSAGE_MAP()
 
 BOOL CMFCApplication5Dlg::OnInitDialog()
 {
+
 	CDialogEx::OnInitDialog();
 
 	// 将“关于...”菜单项添加到系统菜单中。
@@ -127,7 +129,7 @@ BOOL CMFCApplication5Dlg::OnInitDialog()
 
 	CRect rct;
 	GetClientRect(&rct);
-	m_list.SetWindowPos(0, 0, 0, rct.Width(), rct.Height()-40, SWP_NOOWNERZORDER);
+	m_list.SetWindowPos(0, 0, 0, rct.Width(), rct.Height()-60, SWP_NOOWNERZORDER);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -188,11 +190,15 @@ void CMFCApplication5Dlg::OnSize(UINT nType, int cx, int cy)
 	CDialogEx::OnSize(nType, cx, cy);
 	CRect rct;
 	GetClientRect(&rct);
-	m_list.SetWindowPos(0, 0, 0, rct.Width(), rct.Height() - 40, SWP_NOOWNERZORDER);
+	m_list.SetWindowPos(0, 0, 0, rct.Width(), rct.Height() - 60, SWP_NOOWNERZORDER);
 
 	for (int x = IDC_BUTTON1; x <= IDC_BUTTON7;++x)
 	{
 		CWnd *pwnd = GetDlgItem(x);
+		if (!pwnd)
+		{
+			return;
+		}
 		CRect rct;
 		pwnd->GetWindowRect(&rct);
 		ScreenToClient(&rct);
