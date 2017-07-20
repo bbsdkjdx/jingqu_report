@@ -128,8 +128,11 @@ BOOL CMFCApplication5Dlg::OnInitDialog()
 	}
 
 	CRect rct;
+	CWnd *pwnd = GetDlgItem(IDC_BUTTON1);
+	pwnd->GetWindowRect(&rct);
+	int h = rct.Height();
 	GetClientRect(&rct);
-	m_list.SetWindowPos(0, 0, 0, rct.Width(), rct.Height()-60, SWP_NOOWNERZORDER);
+	m_list.SetWindowPos(0, 0, 0, rct.Width(), rct.Height()-h-10, SWP_NOOWNERZORDER);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -188,10 +191,8 @@ HCURSOR CMFCApplication5Dlg::OnQueryDragIcon()
 void CMFCApplication5Dlg::OnSize(UINT nType, int cx, int cy)
 {
 	CDialogEx::OnSize(nType, cx, cy);
-	CRect rct;
-	GetClientRect(&rct);
-	m_list.SetWindowPos(0, 0, 0, rct.Width(), rct.Height() - 60, SWP_NOOWNERZORDER);
 
+	CRect rct;
 	for (int x = IDC_BUTTON1; x <= IDC_BUTTON7;++x)
 	{
 		CWnd *pwnd = GetDlgItem(x);
@@ -199,11 +200,15 @@ void CMFCApplication5Dlg::OnSize(UINT nType, int cx, int cy)
 		{
 			return;
 		}
-		CRect rct;
 		pwnd->GetWindowRect(&rct);
 		ScreenToClient(&rct);
-		pwnd->SetWindowPos(0, rct.left,cy-rct.Height()-10, 0, 0, SWP_NOSIZE);
+		pwnd->SetWindowPos(0, rct.left,cy-rct.Height()-5, 0, 0, SWP_NOSIZE);
 	}
+
+	int h = rct.Height();
+	GetClientRect(&rct);
+	m_list.SetWindowPos(0, 0, 0, rct.Width(), cy-h-10, SWP_NOOWNERZORDER);
+
 	// TODO:  在此处添加消息处理程序代码
 }
 
