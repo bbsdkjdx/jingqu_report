@@ -14,7 +14,7 @@ server_address=None
 token=None
 
 ##################################################
-# [id,from,mod,view,info]
+# [id,from,path,info]
 ##################################################
 ####### common userd function ###############################################
 
@@ -72,7 +72,34 @@ def get_table_head():
 	__main__.stack__[:L]=heads
 	return L
 
-def add_data(data):
-	id=time.time()
+def new_piece(data):
+	id=str(time.time())
 	time.sleep(0.001)#make sure no id is equal.
-	piece=[id,user_name,user_name,user_name,data]
+	piece=[id,user_name,[user_name],data]
+	return piece
+
+def get_piece_status(frm,pth):
+	if len(pth)==1:
+		return '本地添加'
+	if frm in pth:
+		return '待审核'
+	return '被驳回'
+
+def grid_append_piece(piece):
+	# [id,from,path,info]
+	_id,frm,pth,info=piece
+	cnt=__main__.exe_fun__['get_item_count']()
+	__main__.exe_fun__['insert_item'](cnt,_id)
+	__main__.exe_fun__['set_item_text'](cnt,1,frm)
+	__main__.exe_fun__['set_item_text'](cnt,2,get_piece_status(frm,pth))
+	for n,x in enumerate(info,3): 
+		__main__.exe_fun__['set_item_text'](cnt,n,x)
+
+def submit_piece(_id):
+	cln.submit_piece(user_name,_id)
+
+
+def load_excel(fn):
+	piece=new_piece([str(x) for x in range(15)])
+	cln.upload_piece(piece)
+	grid_append_piece(piece)

@@ -16,6 +16,33 @@
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
+CMFCApplication5Dlg *g_p_dlg = nullptr;
+
+void delete_all_items()
+{
+	if (!g_p_dlg)return;
+	g_p_dlg->m_list.DeleteAllItems();
+}
+
+void insert_item(int n, WCHAR *str)
+{
+	if (!g_p_dlg)return;
+	g_p_dlg->m_list.InsertItem(n, str);
+}
+
+void set_item_text(int n, int nsub, WCHAR *str)
+{
+	if (!g_p_dlg)return;
+	g_p_dlg->m_list.SetItemText(n, nsub, str);
+}
+
+int get_item_count()
+{
+	if (!g_p_dlg)return -1;
+	return g_p_dlg->m_list.GetItemCount();
+}
+
+
 class CAboutDlg : public CDialogEx
 {
 public:
@@ -70,6 +97,8 @@ BEGIN_MESSAGE_MAP(CMFCApplication5Dlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CMFCApplication5Dlg::OnBnClickedOk)
 	ON_WM_GETMINMAXINFO()
 	ON_BN_CLICKED(IDC_BUTTON2, &CMFCApplication5Dlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON3, &CMFCApplication5Dlg::OnSubmit)
+	ON_BN_CLICKED(IDC_BUTTON1, &CMFCApplication5Dlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
@@ -112,7 +141,7 @@ BOOL CMFCApplication5Dlg::OnInitDialog()
 		CDialogEx::OnOK();
 	}
 
-
+	g_p_dlg = this;
 	DWORD dwStyle = m_list.GetExtendedStyle();    //获取当前扩展样式
 	dwStyle |= LVS_EX_FULLROWSELECT;                //选中某行使整行高亮（report风格时）
 	dwStyle |= LVS_EX_GRIDLINES;                    //网格线（report风格时）
@@ -120,11 +149,12 @@ BOOL CMFCApplication5Dlg::OnInitDialog()
 
 	PyEvalW(_T("autorun.get_table_head()"));
 	int len = PyGetInt();
-	m_list.InsertColumn(0, _T("数据来源"), 0, 100);
-	m_list.InsertColumn(1, _T("数据状态"), 0, 100);
+	m_list.InsertColumn(0, _T("流水号"), 0, 0);
+	m_list.InsertColumn(1, _T("数据来源"), 0, 100);
+	m_list.InsertColumn(2, _T("数据状态"), 0, 100);
 	for (int x = 0; x < len; ++x)
 	{
-		m_list.InsertColumn(x+2, PyGetStr(x), 0, 100);
+		m_list.InsertColumn(x+3, PyGetStr(x), 0, 100);
 	}
 
 	CRect rct;
@@ -133,6 +163,11 @@ BOOL CMFCApplication5Dlg::OnInitDialog()
 	int h = rct.Height();
 	GetClientRect(&rct);
 	m_list.SetWindowPos(0, 0, 0, rct.Width(), rct.Height()-h-10, SWP_NOOWNERZORDER);
+
+	REG_EXE_FUN(delete_all_items, "#", "");
+	REG_EXE_FUN(insert_item, "#lS", "");
+	REG_EXE_FUN(set_item_text, "#llS", "");
+	REG_EXE_FUN(get_item_count, "l", "");
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -232,4 +267,31 @@ void CMFCApplication5Dlg::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 void CMFCApplication5Dlg::OnBnClickedButton2()
 {
 	// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CMFCApplication5Dlg::OnSubmit()
+{
+	POSITION pos = m_list.GetFirstSelectedItemPosition();
+	if (pos == NULL)
+	{
+		return;
+	}
+	else
+	{
+		while (pos)
+		{
+			int nItem = m_list.GetNextSelectedItem(pos);
+			CString str;
+			str.Format(_T("autorun.submit_piece('%s')"), m_list.GetItemText(nItem, 0));
+			PyExecW(str.GetBuffer());
+		}
+	}
+}
+
+
+void CMFCApplication5Dlg::OnBnClickedButton1()
+{
+	PyExecW(_T("autorun.load_excel(0)"));
+
 }
