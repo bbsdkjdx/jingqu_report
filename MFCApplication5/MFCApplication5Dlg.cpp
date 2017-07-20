@@ -119,9 +119,10 @@ BOOL CMFCApplication5Dlg::OnInitDialog()
 	PyEvalW(_T("autorun.get_table_head()"));
 	int len = PyGetInt();
 	m_list.InsertColumn(0, _T("数据来源"), 0, 100);
-	for (int x = 0; x < len;++x)
+	m_list.InsertColumn(1, _T("数据状态"), 0, 100);
+	for (int x = 0; x < len; ++x)
 	{
-		m_list.InsertColumn(x+1, PyGetStr(x), 0, 100);
+		m_list.InsertColumn(x+2, PyGetStr(x), 0, 100);
 	}
 
 	CRect rct;

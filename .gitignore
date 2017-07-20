@@ -23,7 +23,6 @@
 *.lib
 
 # Executables
-*.exe
 *.out
 *.app
 
@@ -79,3 +78,12 @@ $RECYCLE.BIN/
 *.lnk
 *.aps
 *.sdf
+*.ipch
+*.opensdf
+*.log
+*.tlog
+*.tlog
+*.tlog
+*.pdb
+*.pyc
+Release/MFCApplication5.exe

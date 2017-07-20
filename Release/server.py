@@ -41,6 +41,7 @@ def login(un,pw):
 	return 1,encrypt(un)#as token
 
 def submit_piece(piece):
+	pass
 
 svr=rpc.RpcSvr('0.0.0.0',9090)
 svr.reg_fun(login)
