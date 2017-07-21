@@ -114,14 +114,12 @@ def refresh():
 	for pc in pcs:
 		grid_append_piece(pc)
 
-def load_excel(fn):
-	import office
-	xls=office.Excel(0)
-	bk=xls.open(fn)
-	st=bk.sheets[0]
-	nr=st.n_rows
-	msgbox(nr)
-	for r in range(5,nr+1):
-		data=[st.get_text(r,c) for c in range(1,st.n_cols+1) if st.get_text(c,1)]
-	add_new_piece(data)
+def load_excel():
+	fn=__main__.stack__[0]
+	import xlrd
+	book = xlrd.open_workbook(fn)
+	st=book.sheet_by_index(0)
+	for r in range(4,st.nrows):
+		data=[str(x) for x in st.row_values(r)]
+		add_new_piece(data)
 
