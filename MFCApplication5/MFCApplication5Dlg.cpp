@@ -99,6 +99,9 @@ BEGIN_MESSAGE_MAP(CMFCApplication5Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON2, &CMFCApplication5Dlg::OnBnClickedButton2)
 	ON_BN_CLICKED(IDC_BUTTON3, &CMFCApplication5Dlg::OnSubmit)
 	ON_BN_CLICKED(IDC_BUTTON1, &CMFCApplication5Dlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON7, &CMFCApplication5Dlg::OnRefresh)
+	ON_BN_CLICKED(IDC_BUTTON4, &CMFCApplication5Dlg::OnDismiss)
+	ON_BN_CLICKED(IDC_BUTTON6, &CMFCApplication5Dlg::OnBnClickedButton6)
 END_MESSAGE_MAP()
 
 
@@ -168,7 +171,7 @@ BOOL CMFCApplication5Dlg::OnInitDialog()
 	REG_EXE_FUN(insert_item, "#lS", "");
 	REG_EXE_FUN(set_item_text, "#llS", "");
 	REG_EXE_FUN(get_item_count, "l", "");
-
+	OnRefresh();
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -272,10 +275,41 @@ void CMFCApplication5Dlg::OnBnClickedButton2()
 
 void CMFCApplication5Dlg::OnSubmit()
 {
+	ListBatchOperate(_T("autorun.submit_piece"));
+}
+
+
+void CMFCApplication5Dlg::OnBnClickedButton1()
+{
+	PyExecW(_T("autorun.load_excel('c:\\\\tmp.xlsx')"));
+
+}
+
+
+void CMFCApplication5Dlg::OnRefresh()
+{
+	PyExecW(_T("autorun.refresh()"));
+}
+
+
+void CMFCApplication5Dlg::OnDismiss()
+{
+	ListBatchOperate(_T("autorun.dismiss_piece"));
+}
+
+
+void CMFCApplication5Dlg::OnBnClickedButton6()
+{
+	ListBatchOperate(_T("autorun.delete_piece"));
+}
+
+
+int CMFCApplication5Dlg::ListBatchOperate(CString op)
+{
 	POSITION pos = m_list.GetFirstSelectedItemPosition();
 	if (pos == NULL)
 	{
-		return;
+		return 0;
 	}
 	else
 	{
@@ -283,15 +317,10 @@ void CMFCApplication5Dlg::OnSubmit()
 		{
 			int nItem = m_list.GetNextSelectedItem(pos);
 			CString str;
-			str.Format(_T("autorun.submit_piece('%s')"), m_list.GetItemText(nItem, 0));
+			str.Format(_T("%s('%s')"),op, m_list.GetItemText(nItem, 0));
 			PyExecW(str.GetBuffer());
 		}
 	}
-}
-
-
-void CMFCApplication5Dlg::OnBnClickedButton1()
-{
-	PyExecW(_T("autorun.load_excel(0)"));
-
+	OnRefresh();
+	return 1;
 }

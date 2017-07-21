@@ -54,6 +54,29 @@ def submit_piece(name,_id):
 	g_pieces[_id]=piece
 	return 1
 
+def dismiss_piece(name,_id):
+	if _id not in g_pieces:
+		return 0
+	pc=g_pieces[_id]
+	pth=pc[2]
+	if len(pth)<2 or pth[-1]!=name:
+		return 0
+	pc[1]=name
+	pc[2].pop(-1)
+	g_pieces[_id]=pc
+	return 1
+
+def delete_piece(name,_id):
+	try:
+		pc=g_pieces[_id]
+		pth=pc[2]
+		if pth[0]==name:
+			g_pieces.pop(_id)
+			return 1
+		return 0
+	except:
+		return 0
+
 def refresh(name):
 	return [x for x in g_pieces.values() if x[2][-1]==name]
 	
@@ -63,4 +86,7 @@ svr.reg_fun(login)
 svr.reg_fun(upload_piece)
 svr.reg_fun(get_table_head)
 svr.reg_fun(submit_piece)
+svr.reg_fun(refresh)
+svr.reg_fun(dismiss_piece)
+svr.reg_fun(delete_piece)
 svr.run(0)

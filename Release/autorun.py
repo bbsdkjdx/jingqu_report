@@ -5,7 +5,7 @@ import __main__
 import socket
 import time
 socket.setdefaulttimeout(1)
-msgbox = lambda s: ctypes.windll.user32.MessageBoxW(ctypes.windll.user32.GetForegroundWindow(), s, '', 0)
+msgbox = lambda s: ctypes.windll.user32.MessageBoxW(ctypes.windll.user32.GetForegroundWindow(), str(s), '', 0)
 
 cln=None
 user_name=None
@@ -72,18 +72,22 @@ def get_table_head():
 	__main__.stack__[:L]=heads
 	return L
 
-def new_piece(data):
+def add_new_piece(data):
 	id=str(time.time())
 	time.sleep(0.001)#make sure no id is equal.
 	piece=[id,user_name,[user_name],data]
-	return piece
+	try:
+		cln.upload_piece(piece)
+		grid_append_piece(piece)
+	except Exception as exp:
+		msgbox(str(exp))
 
 def get_piece_status(frm,pth):
+	if frm not in pth:
+		return '被驳回'
 	if len(pth)==1:
 		return '本地添加'
-	if frm in pth:
-		return '待审核'
-	return '被驳回'
+	return '待审核'
 
 def grid_append_piece(piece):
 	# [id,from,path,info]
@@ -98,8 +102,26 @@ def grid_append_piece(piece):
 def submit_piece(_id):
 	cln.submit_piece(user_name,_id)
 
+def dismiss_piece(_id):
+	cln.dismiss_piece(user_name,_id)
+
+def delete_piece(_id):
+	cln.delete_piece(user_name,_id)
+
+def refresh():
+	pcs=cln.refresh(user_name)
+	__main__.exe_fun__['delete_all_items']()
+	for pc in pcs:
+		grid_append_piece(pc)
 
 def load_excel(fn):
-	piece=new_piece([str(x) for x in range(15)])
-	cln.upload_piece(piece)
-	grid_append_piece(piece)
+	import office
+	xls=office.Excel(0)
+	bk=xls.open(fn)
+	st=bk.sheets[0]
+	nr=st.n_rows
+	msgbox(nr)
+	for r in range(5,nr+1):
+		data=[st.get_text(r,c) for c in range(1,st.n_cols+1) if st.get_text(c,1)]
+	add_new_piece(data)
+

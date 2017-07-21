@@ -39,4 +39,9 @@ public:
 	afx_msg void OnBnClickedButton2();
 	afx_msg void OnSubmit();
 	afx_msg void OnBnClickedButton1();
+	afx_msg void OnRefresh();
+	afx_msg void OnDismiss();
+	afx_msg void OnBnClickedButton6();
+protected:
+	int ListBatchOperate(CString op);
 };
