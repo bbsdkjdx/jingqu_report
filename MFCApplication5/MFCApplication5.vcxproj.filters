@@ -39,6 +39,12 @@
     <ClInclude Include="DlgLogIn.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ViewDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ListEditor.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFCApplication5.cpp">
@@ -54,6 +60,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="DlgLogIn.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ListEditor.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

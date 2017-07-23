@@ -44,4 +44,6 @@ public:
 	afx_msg void OnBnClickedButton6();
 protected:
 	int ListBatchOperate(CString op);
+public:
+	afx_msg void OnBnClickedButton5();
 };

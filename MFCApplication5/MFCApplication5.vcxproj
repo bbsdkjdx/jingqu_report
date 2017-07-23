@@ -155,15 +155,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DlgLogIn.h" />
+    <ClInclude Include="ListEditor.h" />
     <ClInclude Include="MFCApplication5.h" />
     <ClInclude Include="MFCApplication5Dlg.h" />
     <ClInclude Include="python_support.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="ViewDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DlgLogIn.cpp" />
+    <ClCompile Include="ListEditor.cpp" />
     <ClCompile Include="MFCApplication5.cpp" />
     <ClCompile Include="MFCApplication5Dlg.cpp" />
     <ClCompile Include="python_support.cpp" />
@@ -172,6 +175,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='release_dbg|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ViewDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MFCApplication5.rc" />

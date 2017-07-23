@@ -8,6 +8,7 @@
 #include "afxdialogex.h"
 #include "DlgLogIn.h"
 #include "python_support.h"
+#include "ViewDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -102,6 +103,7 @@ BEGIN_MESSAGE_MAP(CMFCApplication5Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON7, &CMFCApplication5Dlg::OnRefresh)
 	ON_BN_CLICKED(IDC_BUTTON4, &CMFCApplication5Dlg::OnDismiss)
 	ON_BN_CLICKED(IDC_BUTTON6, &CMFCApplication5Dlg::OnBnClickedButton6)
+	ON_BN_CLICKED(IDC_BUTTON5, &CMFCApplication5Dlg::OnBnClickedButton5)
 END_MESSAGE_MAP()
 
 
@@ -151,7 +153,7 @@ BOOL CMFCApplication5Dlg::OnInitDialog()
 	m_list.SetExtendedStyle(dwStyle);            //设置扩展风格
 
 	PyEvalW(_T("autorun.get_table_head()"));
-	int len = PyGetInt();
+	int len = (int)PyGetInt();
 	m_list.InsertColumn(0, _T("流水号"), 0, 0);
 	m_list.InsertColumn(1, _T("数据来源"), 0, 100);
 	m_list.InsertColumn(2, _T("数据状态"), 0, 100);
@@ -334,4 +336,11 @@ int CMFCApplication5Dlg::ListBatchOperate(CString op)
 	}
 	OnRefresh();
 	return 1;
+}
+
+
+void CMFCApplication5Dlg::OnBnClickedButton5()
+{
+	CViewDlg cvd;
+	cvd.DoModal();
 }
