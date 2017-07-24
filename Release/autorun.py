@@ -125,5 +125,4 @@ def load_excel():
 
 def new_piece_from_stack():
 	pos_end=__main__.stack__.index(0)
-	data=__main__.stack__[:pos_end]
 	add_new_piece(__main__.stack__[:pos_end])
