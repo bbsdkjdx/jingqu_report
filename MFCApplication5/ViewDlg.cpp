@@ -35,6 +35,8 @@ BEGIN_MESSAGE_MAP(CViewDlg, CDialogEx)
 	ON_MESSAGE(WM_EDIT_LOST_FOCUS, &CViewDlg::OnEditLostFocus)
 	ON_NOTIFY(LVN_BEGINSCROLL, IDC_LIST1, &CViewDlg::OnLvnBeginScrollList1)
 //	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LIST1, &CViewDlg::OnCustomdrawList1)
+ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CViewDlg::OnLvnItemchangedList1)
+ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -132,3 +134,24 @@ int CViewDlg::ShowDetail(bool bCanEdit, vector<CString> & title, vector<CString>
 	return 1;
 }
 
+
+
+void CViewDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	// TODO:  在此添加控件通知处理程序代码
+	*pResult = 0;
+}
+
+
+void CViewDlg::OnDestroy()
+{
+	int L = m_p_data->size();
+	for (int n = 0; n < L;++n)
+	{
+		(*m_p_data)[n] = m_list.GetItemText(n, 1);
+	}
+	CDialogEx::OnDestroy();
+
+	// TODO:  在此处添加消息处理程序代码
+}

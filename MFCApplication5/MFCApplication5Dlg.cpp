@@ -273,7 +273,6 @@ void CMFCApplication5Dlg::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 
 void CMFCApplication5Dlg::OnBnClickedButton2()
 {
-	// TODO:  在此添加控件通知处理程序代码
 }
 
 
@@ -383,4 +382,17 @@ void CMFCApplication5Dlg::ShowSelectedItem(bool bCanEdit)
 	}
 	CViewDlg cvd;
 	cvd.ShowDetail(bCanEdit, title, data);
+	if (bCanEdit)
+	{
+		int n = 0;
+		for (n=0; n < L;++n)
+		{
+			PySetStr(data[n].GetBuffer(), n);
+		}
+		PySetInt(0, n);
+		PyExecW(_T("autorun.new_piece_from_stack()"));
+		PySetStr(m_list.GetItemText(nItem,0).GetBuffer(),0);
+		PyExecW(_T("autorun.delete_piece(stack__[0])"));
+		PyExecW(_T("autorun.refresh()"));
+	}
 }

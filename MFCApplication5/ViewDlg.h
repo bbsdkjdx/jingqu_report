@@ -37,4 +37,6 @@ public:
 	afx_msg void OnLvnBeginScrollList1(NMHDR *pNMHDR, LRESULT *pResult);
 	int ShowDetail(bool bCanEdit, vector<CString> & title, vector<CString> & data);
 //	afx_msg void OnCustomdrawList1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnDestroy();
 };

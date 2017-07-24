@@ -123,3 +123,7 @@ def load_excel():
 		data=[str(x) for x in st.row_values(r)]
 		add_new_piece(data)
 
+def new_piece_from_stack():
+	pos_end=__main__.stack__.index(0)
+	data=__main__.stack__[:pos_end]
+	add_new_piece(__main__.stack__[:pos_end])
