@@ -104,6 +104,8 @@ BEGIN_MESSAGE_MAP(CMFCApplication5Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON4, &CMFCApplication5Dlg::OnDismiss)
 	ON_BN_CLICKED(IDC_BUTTON6, &CMFCApplication5Dlg::OnBnClickedButton6)
 	ON_BN_CLICKED(IDC_BUTTON5, &CMFCApplication5Dlg::OnBnClickedButton5)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CMFCApplication5Dlg::OnLvnItemchangedList1)
+	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CMFCApplication5Dlg::OnDblclkList1)
 END_MESSAGE_MAP()
 
 
@@ -341,6 +343,44 @@ int CMFCApplication5Dlg::ListBatchOperate(CString op)
 
 void CMFCApplication5Dlg::OnBnClickedButton5()
 {
+	ShowSelectedItem(true);
+}
+
+
+void CMFCApplication5Dlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	// TODO:  在此添加控件通知处理程序代码
+	//*pResult = 0;
+}
+
+
+void CMFCApplication5Dlg::OnDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	ShowSelectedItem(false);
+	//*pResult = 0;
+}
+
+
+void CMFCApplication5Dlg::ShowSelectedItem(bool bCanEdit)
+{
+	POSITION pos = m_list.GetFirstSelectedItemPosition();
+	if (pos == NULL)return;
+	int nItem = m_list.GetNextSelectedItem(pos);
+	vector<CString> title;
+	vector<CString>data;
+
+
+	PyEvalW(_T("autorun.get_table_head()"));
+	int L = PyGetInt();
+	for (int n = 0; n < L; ++n)
+	{
+		CString str;
+		title.push_back(PyGetStr(n));
+		str = m_list.GetItemText(nItem, n+3 );
+		data.push_back(str);
+	}
 	CViewDlg cvd;
-	cvd.DoModal();
+	cvd.ShowDetail(bCanEdit, title, data);
 }

@@ -1,10 +1,11 @@
 #pragma once
 #include "afxcmn.h"
 #include "ListEditor.h"
+#include <vector>
 
 
 // CViewDlg ¶Ô»°¿ò
-
+using std::vector;
 class CViewDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CViewDlg)
@@ -25,10 +26,15 @@ public:
 	virtual BOOL OnInitDialog();
 	CListCtrl m_list;
 	CListEditor m_editor;
-	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
+	vector<CString> *m_p_title;
+	vector<CString> *m_p_data;
+	bool m_can_edit;
+//	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnClickList1(NMHDR *pNMHDR, LRESULT *pResult);
 protected:
 	afx_msg LRESULT OnEditLostFocus(WPARAM wParam, LPARAM lParam);
 public:
 	afx_msg void OnLvnBeginScrollList1(NMHDR *pNMHDR, LRESULT *pResult);
+	int ShowDetail(bool bCanEdit, vector<CString> & title, vector<CString> & data);
+//	afx_msg void OnCustomdrawList1(NMHDR *pNMHDR, LRESULT *pResult);
 };

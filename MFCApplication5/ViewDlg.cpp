@@ -14,7 +14,7 @@ IMPLEMENT_DYNAMIC(CViewDlg, CDialogEx)
 CViewDlg::CViewDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CViewDlg::IDD, pParent)
 {
-
+	m_can_edit = false;
 }
 
 CViewDlg::~CViewDlg()
@@ -30,10 +30,11 @@ void CViewDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CViewDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CViewDlg::OnBnClickedOk)
-	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CViewDlg::OnLvnItemchangedList1)
+//	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CViewDlg::OnLvnItemchangedList1)
 	ON_NOTIFY(NM_CLICK, IDC_LIST1, &CViewDlg::OnClickList1)
 	ON_MESSAGE(WM_EDIT_LOST_FOCUS, &CViewDlg::OnEditLostFocus)
 	ON_NOTIFY(LVN_BEGINSCROLL, IDC_LIST1, &CViewDlg::OnLvnBeginScrollList1)
+//	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LIST1, &CViewDlg::OnCustomdrawList1)
 END_MESSAGE_MAP()
 
 
@@ -58,28 +59,30 @@ BOOL CViewDlg::OnInitDialog()
 
 	m_list.InsertColumn(0, _T("属性"), 0, 200);
 	m_list.InsertColumn(1, _T("数值"), 0, 500);
-	for (int x = 0; x < 30;++x)
-{
-	m_list.InsertItem(x, _T("abc"));
-	m_list.SetItemText(x, 1, _T("abc"));
-}
+
+	int L = m_p_title->size();
+	for (int n = 0; n < L; ++n)
+	{
+		m_list.InsertItem(n, (*m_p_title)[n]);
+		m_list.SetItemText(n, 1, (*m_p_data)[n]);
+	}
 	m_editor.Create(ES_AUTOHSCROLL | WS_CHILD | ES_LEFT | ES_WANTRETURN | WS_BORDER, CRect(), this, 0);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
 }
 
 
-void CViewDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	// TODO:  在此添加控件通知处理程序代码
-	*pResult = 0;
-}
+//void CViewDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
+//{
+//	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+//	// TODO:  在此添加控件通知处理程序代码
+//	*pResult = 0;
+//}
 
 void CViewDlg::OnClickList1(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
-	if (pNMItemActivate->iSubItem==0)return;
+	if (pNMItemActivate->iSubItem==0 || !m_can_edit)return;
 
 	CRect rect;
 	int item = pNMItemActivate->iItem;
@@ -115,3 +118,17 @@ void CViewDlg::OnLvnBeginScrollList1(NMHDR *pNMHDR, LRESULT *pResult)
 	OnEditLostFocus(0, 0);
 	*pResult = 0;
 }
+
+
+int CViewDlg::ShowDetail(bool bCanEdit, vector<CString> & title, vector<CString> & data)
+{
+	int L = title.size();
+	if (data.size() != L)return 0;
+	m_can_edit = bCanEdit;
+	m_p_title = &title;
+	m_p_data = &data;
+
+	DoModal();
+	return 1;
+}
+

@@ -46,4 +46,7 @@ protected:
 	int ListBatchOperate(CString op);
 public:
 	afx_msg void OnBnClickedButton5();
+	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnDblclkList1(NMHDR *pNMHDR, LRESULT *pResult);
+	void ShowSelectedItem(bool bCanEdit);
 };
