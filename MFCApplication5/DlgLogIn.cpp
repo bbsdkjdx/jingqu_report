@@ -43,11 +43,11 @@ void CDlgLogIn::OnBnClickedOk()
 {
 	CString str;
 	m_edit_user.GetWindowTextW(str);
-	PySetStr(str.GetBuffer(), 0);
+	PySetStrW(str.GetBuffer(), 0);
 	m_edit_pwd.GetWindowTextW(str);
-	PySetStr(str.GetBuffer(), 1);
+	PySetStrW(str.GetBuffer(), 1);
 	m_edit_svr.GetWindowTextW(str);
-	PySetStr(str.GetBuffer(), 2);
+	PySetStrW(str.GetBuffer(), 2);
 	PyExecW(_T("autorun.set_login_info()"));
 
 	PyEvalW(_T("autorun.login()"));

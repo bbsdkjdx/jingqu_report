@@ -294,8 +294,9 @@ void CMFCApplication5Dlg::OnBnClickedButton1()
 	CString cmd;
 	if (result ==IDOK) 
 	{
-		PySetStr(openFileDlg.GetPathName().GetBuffer(),0);
-		PyExecW(_T("autorun.load_excel()"));
+		PySetStrW(openFileDlg.GetPathName().GetBuffer(),0);
+		//PyExecW(_T("autorun.load_excel()"));
+		PyExecA("autorun.load_excel()");
 	}
 }
 
@@ -365,14 +366,13 @@ void CMFCApplication5Dlg::OnDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 void CMFCApplication5Dlg::ShowSelectedItem(bool bCanEdit)
 {
 	POSITION pos = m_list.GetFirstSelectedItemPosition();
-	if (pos == NULL)return;
-	int nItem = m_list.GetNextSelectedItem(pos);
+	int nItem =pos? m_list.GetNextSelectedItem(pos):-1;
 	vector<CString> title;
 	vector<CString>data;
 
 
-	PyEvalW(_T("autorun.get_table_head()"));
-	int L = PyGetInt();
+	PyEvalA("autorun.get_table_head()");
+	int L = (int)PyGetInt();
 	for (int n = 0; n < L; ++n)
 	{
 		CString str;
@@ -382,17 +382,17 @@ void CMFCApplication5Dlg::ShowSelectedItem(bool bCanEdit)
 	}
 	CViewDlg cvd;
 	cvd.ShowDetail(bCanEdit, title, data);
-	if (bCanEdit)
+	if (bCanEdit || nItem==-1)//nItem==-1 is add new item.
 	{
 		int n = 0;
 		for (n=0; n < L;++n)
 		{
-			PySetStr(data[n].GetBuffer(), n);
+			PySetStrW(data[n].GetBuffer(), n);
 		}
 		PySetInt(0, n);
-		PyExecW(_T("autorun.new_piece_from_stack()"));
-		PySetStr(m_list.GetItemText(nItem,0).GetBuffer(),0);
-		PyExecW(_T("autorun.delete_piece(stack__[0])"));
-		PyExecW(_T("autorun.refresh()"));
+		PyExecA("autorun.new_piece_from_stack()");
+		PySetStrW( nItem!=-1 ? m_list.GetItemText(nItem,0).GetBuffer():_T(""),0);
+		PyExecA("autorun.delete_piece(stack__[0])");
+		PyExecA("autorun.refresh()");
 	}
 }

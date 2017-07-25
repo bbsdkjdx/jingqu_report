@@ -52,7 +52,20 @@ void _init_python()//call it before use other function else.
 	pModule = PyImport_ImportModule("__main__");
 }
 
-void PySetStr(wchar_t *arg, int idx)//assign arg to TMP_NAME in python.
+void PySetStrA(char *arg, int idx)
+{
+	PyObject *p = PyUnicode_FromString(arg);
+	PyObject_SetAttrString(pModule, PY_TMP_NAME, p);
+	Py_DECREF(p);
+	if (idx > -1)
+	{
+		char buf[100];
+		sprintf_s(buf, "stack__[%d]="PY_TMP_NAME, idx);
+		PyRun_SimpleString(buf);
+	}
+}
+
+void PySetStrW(wchar_t *arg, int idx)//assign arg to TMP_NAME in python.
 {
 	PyObject *p = PyUnicode_FromUnicode(arg, wcslen(arg));
 	PyObject_SetAttrString(pModule, PY_TMP_NAME, p);
@@ -128,11 +141,16 @@ char *exe_cmd =
 ;
 bool PyExecW(wchar_t *arg)//exec(arg).return true if success.use PyGetResult() to get exception info if fail.
 {
-	PySetStr(arg);
+	PySetStrW(arg);
 	PyRun_SimpleString(exe_cmd);
 	return PyLong_AS_LONG(PyObject_GetAttrString(pModule,"__ok"));
 }
-
+bool PyExecA(char *arg)//exec(arg).return true if success.use PyGetResult() to get exception info if fail.
+{
+	PySetStrA(arg);
+	PyRun_SimpleString(exe_cmd);
+	return PyLong_AS_LONG(PyObject_GetAttrString(pModule, "__ok"));
+}
 char *eval_cmd =
 "try:\n"
 "    "PY_TMP_NAME"=eval("PY_TMP_NAME")\n"
@@ -143,22 +161,29 @@ char *eval_cmd =
 ;
 bool PyEvalW(wchar_t *arg)//eval(arg).return true if success,use PyGetResult() to get result.
 {
-	PySetStr(arg);
+	PySetStrW(arg);
+	PyRun_SimpleString(eval_cmd);
+	return PyLong_AS_LONG(PyObject_GetAttrString(pModule, "__ok"));
+}
+
+bool PyEvalA(char *arg)//eval(arg).return true if success,use PyGetResult() to get result.
+{
+	PySetStrA(arg);
 	PyRun_SimpleString(eval_cmd);
 	return PyLong_AS_LONG(PyObject_GetAttrString(pModule, "__ok"));
 }
 
 bool PyEvalOrExecW(wchar_t *arg)//try eval first,if fail,do exec.
 {
-	PySetStr(arg);
+	PySetStrW(arg);
 	if (PyEvalW(arg)) return true;
-	PySetStr(arg);
+	PySetStrW(arg);
 	return PyExecW(arg);
 }
 
 bool PyRunFile(wchar_t *fn)
 {
-	PySetStr(fn);
+	PySetStrW(fn);
 	return PyExecW(_T("exec(open(__c2p2c__).read())"));
 }
 
