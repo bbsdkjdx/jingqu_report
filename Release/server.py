@@ -1,8 +1,16 @@
 import rpc
-
+import json
 ####### common userd function ###############################################
 
-
+class writer():
+	def __init__(self):
+		pass
+	def write(self,s):
+		pass
+import sys
+sys.stderr=writer()
+print('服务正在运行中...')
+#################################################
 def encrypt(s):
     import base64
     s = s.encode()
@@ -14,6 +22,17 @@ def decrypt(s):
     s = s.encode()
     s = base64.b85decode(base64.a85decode(s))
     return s.decode()
+
+def save_pieces():
+	global g_pieces
+	json.dump(g_pieces,open('pieces.dat','w'))
+
+def load_pieces():
+	global g_pieces
+	try:
+		g_pieces=json.load(open('pieces.dat','r'))
+	except:
+		pass
 ##############################################
 
 g_users={'gb1':['gb2',encrypt('123'),'耕保科'],
@@ -39,8 +58,6 @@ table_heads['地籍科']=['出（转）让方*','出（转）让方法定代表�
 table_heads['不动产']=['序号','座落','土地权利人','不动产证书号','使用权类型','用途','面积（㎡）','宗地编码','变更日期','备注']
 
 svr=rpc.RpcSvr('0.0.0.0',9090)
-svr.run(0)
-
 #%%
 def get_table_head(token):
 	name=decrypt(token)
@@ -60,6 +77,7 @@ svr.reg_fun(login)
 #%%
 def upload_piece(piece):
 	g_pieces[piece[0]]=piece
+	save_pieces()
 	return 1
 svr.reg_fun(upload_piece)
 #%%
@@ -71,6 +89,7 @@ def submit_piece(name,_id):
 	piece[1]=name#from
 	piece[2].append(ldr)#path
 	g_pieces[_id]=piece
+	save_pieces()
 	return 1
 svr.reg_fun(submit_piece)
 #%%
@@ -84,6 +103,7 @@ def dismiss_piece(name,_id):
 	pc[1]=name
 	pc[2].pop(-1)
 	g_pieces[_id]=pc
+	save_pieces()
 	return 1
 svr.reg_fun(dismiss_piece)
 #%%
@@ -94,6 +114,7 @@ def delete_piece(name,_id):
 		if pth[0]==name:
 			g_pieces.pop(_id)
 			return 1
+			save_pieces()
 		return 0
 	except:
 		return 0
@@ -112,3 +133,5 @@ def get_r0_base0(name):
 	except:
 		return -1
 svr.reg_fun(get_r0_base0)
+load_pieces()
+svr.run(1)
