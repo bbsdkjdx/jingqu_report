@@ -83,5 +83,11 @@
     <Image Include="res\MFCApplication5.ico">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="res\icon1.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\f14.ico">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>
