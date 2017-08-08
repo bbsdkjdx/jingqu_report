@@ -32,31 +32,37 @@ g_users={'gb1':['gb2',encrypt('123'),'耕保科'],
 }
 
 g_pieces=dict()
-
 table_heads=dict()
 table_heads['耕保科']=['批次号','省批复文号','座落位置','报批亩数','报批公顷数','农用地小计','耕地','建设用地','未利用地','社保资金','土地补偿费','地上附着物','青苗费','占补平衡指标','被征地村居','批复日期','图件信息','影像资料','备注']
 table_heads['利用科']=['受让方*','受让方法定代表人','土地位置*','土地面积（单位：平方米）','出让时间','出让总金额（单位：万元）','用途','年限','备注']
 table_heads['地籍科']=['出（转）让方*','出（转）让方法定代表人','受让方*','受让方法定代表人','土地位置*','土地面积（单位：平方米）','出（转）让时间','出（转）让总金额（单位：万元）','备注']
 table_heads['不动产']=['序号','座落','土地权利人','不动产证书号','使用权类型','用途','面积（㎡）','宗地编码','变更日期','备注']
 
+svr=rpc.RpcSvr('0.0.0.0',9090)
+svr.run(0)
+
+#%%
 def get_table_head(token):
 	name=decrypt(token)
 	if name not in g_users:
 		return []
 	department=g_users[name][2]
 	return table_heads.get(department,[])
-
+svr.reg_fun(get_table_head)
+#%%
 def login(un,pw):
 	if un not in g_users:
 		return 0,'用户不存在'
 	if g_users[un][1]!=pw:
 		return 0,'密码不正确'
 	return 1,(encrypt(un),un,g_users[un][2])#encrypt un as token
-
+svr.reg_fun(login)
+#%%
 def upload_piece(piece):
 	g_pieces[piece[0]]=piece
 	return 1
-
+svr.reg_fun(upload_piece)
+#%%
 def submit_piece(name,_id):
 	if _id not in g_pieces or name not in g_users:
 		return 0
@@ -66,7 +72,8 @@ def submit_piece(name,_id):
 	piece[2].append(ldr)#path
 	g_pieces[_id]=piece
 	return 1
-
+svr.reg_fun(submit_piece)
+#%%
 def dismiss_piece(name,_id):
 	if _id not in g_pieces:
 		return 0
@@ -78,7 +85,8 @@ def dismiss_piece(name,_id):
 	pc[2].pop(-1)
 	g_pieces[_id]=pc
 	return 1
-
+svr.reg_fun(dismiss_piece)
+#%%
 def delete_piece(name,_id):
 	try:
 		pc=g_pieces[_id]
@@ -89,10 +97,12 @@ def delete_piece(name,_id):
 		return 0
 	except:
 		return 0
-
+svr.reg_fun(delete_piece)
+#%%
 def refresh(name):
 	return [x for x in g_pieces.values() if x[2][-1]==name]
-
+svr.reg_fun(refresh)
+#%%
 def get_r0_base0(name):
 	try:
 		dep=g_users[name][2]
@@ -101,15 +111,4 @@ def get_r0_base0(name):
 		return 1
 	except:
 		return -1
-
-
-svr=rpc.RpcSvr('0.0.0.0',9090)
-svr.reg_fun(login)
 svr.reg_fun(get_r0_base0)
-svr.reg_fun(upload_piece)
-svr.reg_fun(get_table_head)
-svr.reg_fun(submit_piece)
-svr.reg_fun(refresh)
-svr.reg_fun(dismiss_piece)
-svr.reg_fun(delete_piece)
-svr.run(0)

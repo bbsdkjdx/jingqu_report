@@ -386,8 +386,8 @@ void CMFCApplication5Dlg::ShowSelectedItem(bool bCanEdit)
 		data.push_back(str);
 	}
 	CViewDlg cvd;
-	cvd.ShowDetail(bCanEdit, title, data);
-	if (bCanEdit || nItem==-1)//nItem==-1 is add new item.
+	int pressok=cvd.ShowDetail(bCanEdit, title, data);
+	if (pressok && (bCanEdit || nItem==-1))//nItem==-1 is add new item.
 	{
 		int n = 0;
 		for (n=0; n < L;++n)

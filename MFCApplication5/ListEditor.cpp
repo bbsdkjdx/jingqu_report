@@ -35,7 +35,7 @@ END_MESSAGE_MAP()
 void CListEditor::OnKillFocus(CWnd* pNewWnd)
 {
 	CEdit::OnKillFocus(pNewWnd);
-
+	
 	GetParent()->SendMessageW(WM_EDIT_LOST_FOCUS, 0, 0);
 }
 

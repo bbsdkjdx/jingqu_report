@@ -37,6 +37,9 @@ BEGIN_MESSAGE_MAP(CViewDlg, CDialogEx)
 //	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LIST1, &CViewDlg::OnCustomdrawList1)
 ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CViewDlg::OnLvnItemchangedList1)
 ON_WM_DESTROY()
+//ON_NOTIFY(NM_SETFOCUS, IDC_LIST1, &CViewDlg::OnSetfocusList1)
+ON_BN_CLICKED(IDC_BUTTON1, &CViewDlg::OnBnClickedButton1)
+ON_BN_CLICKED(IDC_BUTTON2, &CViewDlg::OnBnClickedButton2)
 END_MESSAGE_MAP()
 
 
@@ -130,8 +133,7 @@ int CViewDlg::ShowDetail(bool bCanEdit, vector<CString> & title, vector<CString>
 	m_p_title = &title;
 	m_p_data = &data;
 
-	DoModal();
-	return 1;
+	return (DoModal() == IDOK) ? 1 : 0;
 }
 
 
@@ -154,4 +156,24 @@ void CViewDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 
 	// TODO:  在此处添加消息处理程序代码
+}
+
+
+//void CViewDlg::OnSetfocusList1(NMHDR *pNMHDR, LRESULT *pResult)
+//{
+//	// TODO:  在此添加控件通知处理程序代码
+//	AfxMessageBox(_T(""));
+//	*pResult = 0;
+//}
+
+
+void CViewDlg::OnBnClickedButton1()
+{
+	OnOK();
+}
+
+
+void CViewDlg::OnBnClickedButton2()
+{
+	OnCancel();
 }

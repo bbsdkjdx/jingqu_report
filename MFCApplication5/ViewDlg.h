@@ -39,4 +39,7 @@ public:
 //	afx_msg void OnCustomdrawList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnDestroy();
+//	afx_msg void OnSetfocusList1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedButton1();
+	afx_msg void OnBnClickedButton2();
 };
