@@ -147,6 +147,10 @@ BOOL CMFCApplication5Dlg::OnInitDialog()
 	{
 		CDialogEx::OnOK();
 	}
+	if (PyEvalA("autorun.get_title()"))
+	{
+		SetWindowText(PyGetStr());
+	}
 
 	g_p_dlg = this;
 	DWORD dwStyle = m_list.GetExtendedStyle();    //获取当前扩展样式
@@ -161,7 +165,8 @@ BOOL CMFCApplication5Dlg::OnInitDialog()
 	m_list.InsertColumn(2, _T("数据状态"), 0, 100);
 	for (int x = 0; x < len; ++x)
 	{
-		m_list.InsertColumn(x+3, PyGetStr(x), 0, 100);
+		CString str = PyGetStr(x);
+		m_list.InsertColumn(x+3, str, 0, str.GetLength()*20);
 	}
 
 	CRect rct;

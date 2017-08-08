@@ -12,7 +12,7 @@ user_name=None
 cry_password=None
 server_address=None
 token=None
-
+department=None
 ##################################################
 # [id,from,path,info]
 ##################################################
@@ -52,14 +52,14 @@ def set_login_info():
 	json.dump(info, open('login.json', 'w'))
 
 def login():
-	global cln,token
+	global cln,token,user_name,department
 	try:
 		cln=rpc.RpcClient(server_address,9090)
 		b_ok,res=cln.login(user_name,cry_password)
 		if not b_ok:
 			msgbox(res)
 			return 0
-		token=res
+		token,user_name,department=res
 		return 1
 	except:
 		msgbox('无法连接到服务器')
@@ -96,7 +96,7 @@ def grid_append_piece(piece):
 	__main__.exe_fun__['insert_item'](cnt,_id)
 	__main__.exe_fun__['set_item_text'](cnt,1,frm)
 	__main__.exe_fun__['set_item_text'](cnt,2,get_piece_status(frm,pth))
-	for n,x in enumerate(info,3): 
+	for n,x in enumerate(info,3):
 		__main__.exe_fun__['set_item_text'](cnt,n,x)
 
 def submit_piece(_id):
@@ -115,14 +115,21 @@ def refresh():
 		grid_append_piece(pc)
 
 def load_excel():
-	fn=__main__.stack__[0]
+	fn = __main__.stack__[0]
 	import xlrd
 	book = xlrd.open_workbook(fn)
-	st=book.sheet_by_index(0)
-	for r in range(4,st.nrows):
+	st = book.sheet_by_index(0)
+	r0=cln.get_r0_base0(user_name)
+	if r0==-1:
+		msgbox('导入失败！')
+		return
+	for r in range(r0,st.nrows):
 		data=[str(x) for x in st.row_values(r)]
 		add_new_piece(data)
 
 def new_piece_from_stack():
 	pos_end=__main__.stack__.index(0)
 	add_new_piece(__main__.stack__[:pos_end])
+
+def get_title():
+	return '部门：%s  姓名：%s'%(department,user_name)

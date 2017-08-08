@@ -51,7 +51,11 @@ BOOL CMFCApplication5App::InitInstance()
 	InitCommonControlsEx(&InitCtrls);
 
 	CWinApp::InitInstance();
-	PyExecW(_T("import autorun"));
+	if (!PyExecW(_T("import autorun")))
+	{
+		AfxMessageBox(PyGetStr());
+		return false;
+	}
 	AfxEnableControlContainer();
 
 	// 创建 shell 管理器，以防对话框包含
