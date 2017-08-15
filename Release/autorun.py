@@ -139,19 +139,21 @@ def fill_data(st,pieces,r0):
 		for c,x in enumerate(pc,1):
 			st.set_text(r,c,x)
 
+
 def export_xls():
 	fn=__main__.stack__[0]
 	dic=cln.get_export_data(token)
 	if not dic:
 		return
 	import office
+	import os
 	xls=office.Excel(0)
 	bk2=xls.new()
 	st2=bk2.sheets[0]
 	for x in ['耕保科','利用科','地籍科','不动产']:
 		if x in dic:
 			pcs=dic[x]
-			bk1=xls.open('c:\\'+x+'.template')
+			bk1=xls.open(os.path.join(os.getcwd(),x+'.template'))
 			st1=bk1.sheets[0]
 			st1.copy_before(st2)
 			stnew=bk2.sheets[-4]
