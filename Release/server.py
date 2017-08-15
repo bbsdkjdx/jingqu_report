@@ -133,5 +133,16 @@ def get_r0_base0(name):
 	except:
 		return -1
 svr.reg_fun(get_r0_base0)
+
+def get_export_data(token):
+	name=decrypt(token)
+	pcs=[x for x in g_pieces.values() if x[2][-1]==name]
+	ret=dict()
+	for pc in pcs:
+		dep=g_users[pc[1]][-1]
+		ret.setdefault(dep,[]).append(pc[-1])
+	return ret
+svr.reg_fun(get_export_data)
+
 load_pieces()
-svr.run(1)
+svr.run(0)

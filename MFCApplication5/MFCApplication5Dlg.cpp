@@ -278,6 +278,26 @@ void CMFCApplication5Dlg::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 
 void CMFCApplication5Dlg::OnBnClickedButton2()
 {
+	if (m_list.GetItemCount()==0)
+	{
+		return;
+	}
+
+	BOOL isOpen = FALSE;     //是否打开(否则为保存)  
+	CString defaultDir = L"";   //默认打开的文件路径  
+	CString fileName = L"";         //默认打开的文件名  
+	CString filter = L"文件 (*.xlsx; *.xls)|*.xlsx;*.xls||";   //文件过虑的类型  
+	CFileDialog openFileDlg(isOpen, defaultDir, fileName, OFN_HIDEREADONLY | OFN_READONLY, filter, NULL);
+	openFileDlg.GetOFN().lpstrInitialDir = L"";
+	INT_PTR result = openFileDlg.DoModal();
+	CString cmd;
+	if (result == IDOK)
+	{      
+		PySetStrW(openFileDlg.GetPathName().GetBuffer(), 0);
+		PyExecW(_T("autorun.export_xls()"));
+		AfxMessageBox(_T("导出成功"));
+		//PyExecA("autorun.load_excel()");
+	}
 }
 
 
