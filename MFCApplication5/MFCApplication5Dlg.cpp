@@ -106,6 +106,7 @@ BEGIN_MESSAGE_MAP(CMFCApplication5Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON5, &CMFCApplication5Dlg::OnBnClickedButton5)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CMFCApplication5Dlg::OnLvnItemchangedList1)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CMFCApplication5Dlg::OnDblclkList1)
+	ON_NOTIFY(NM_RCLICK, IDC_LIST1, &CMFCApplication5Dlg::OnRclickList1)
 END_MESSAGE_MAP()
 
 
@@ -420,4 +421,23 @@ void CMFCApplication5Dlg::ShowSelectedItem(bool bCanEdit)
 		PyExecA("autorun.delete_piece(stack__[0])");
 		PyExecA("autorun.refresh()");
 	}
+}
+
+
+void CMFCApplication5Dlg::OnRclickList1(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+
+	PyEvalA("'¸û±£' in autorun.get_title()");
+	//AfxMessageBox(PyGetStr());
+
+	CMenu Menu;
+	Menu.CreatePopupMenu();
+	Menu.AppendMenu(MF_STRING, 1, _T("¸´ÖÆÍ¼°ßºÅ"));
+	CPoint pt;
+	::GetCursorPos(&pt);
+	int sel = (int)Menu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD, pt.x, pt.y, this, nullptr);
+
+	if(sel==1)AfxMessageBox(_T(""));
+	*pResult = 0;
 }

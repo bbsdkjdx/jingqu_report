@@ -49,4 +49,5 @@ public:
 	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnDblclkList1(NMHDR *pNMHDR, LRESULT *pResult);
 	void ShowSelectedItem(bool bCanEdit);
+	afx_msg void OnRclickList1(NMHDR *pNMHDR, LRESULT *pResult);
 };
