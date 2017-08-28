@@ -89,3 +89,6 @@ $RECYCLE.BIN/
 Release/MFCApplication5.exe
 *.idb
 *.suo
+Release/pieces.dat
+Release/pieces.dat
+Release/login.json

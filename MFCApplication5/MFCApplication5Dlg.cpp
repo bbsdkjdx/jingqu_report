@@ -428,8 +428,12 @@ void CMFCApplication5Dlg::OnRclickList1(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 
-	PyEvalA("'¸û±£' in autorun.get_title()");
-	//AfxMessageBox(PyGetStr());
+	PyEvalW(_T("'¸û±£' in autorun.get_title()"));
+	if (!PyGetInt())return;
+
+	POSITION pos = m_list.GetFirstSelectedItemPosition();
+	if (!pos) return;
+	int nItem = m_list.GetNextSelectedItem(pos);
 
 	CMenu Menu;
 	Menu.CreatePopupMenu();
@@ -437,7 +441,19 @@ void CMFCApplication5Dlg::OnRclickList1(NMHDR *pNMHDR, LRESULT *pResult)
 	CPoint pt;
 	::GetCursorPos(&pt);
 	int sel = (int)Menu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD, pt.x, pt.y, this, nullptr);
-
-	if(sel==1)AfxMessageBox(_T(""));
+	if (sel == 1)
+	{
+		CString str=m_list.GetItemText(nItem, 20);
+		OpenClipboard();
+		EmptyClipboard();
+		size_t cbStr = (str.GetLength() + 1) * sizeof(TCHAR);
+		HGLOBAL hData = GlobalAlloc(GMEM_MOVEABLE, cbStr);
+		memcpy_s(GlobalLock(hData), cbStr, str.LockBuffer(), cbStr);
+		GlobalUnlock(hData);
+		str.UnlockBuffer();
+		UINT uiFormat = (sizeof(TCHAR) == sizeof(WCHAR)) ? CF_UNICODETEXT : CF_TEXT;
+		SetClipboardData(uiFormat, hData);
+		CloseClipboard();
+	}
 	*pResult = 0;
 }
