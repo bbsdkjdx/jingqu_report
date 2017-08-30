@@ -89,5 +89,11 @@
     <Image Include="res\f14.ico">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="..\..\..\..\Desktop\捕获.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\捕获.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

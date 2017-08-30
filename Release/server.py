@@ -86,6 +86,8 @@ def submit_piece(name,_id):
 		return 0
 	piece=g_pieces[_id]
 	ldr=g_users[name][0]
+	if not ldr:#财务无上级，不能提交。
+		return 0
 	piece[1]=name#from
 	piece[2].append(ldr)#path
 	g_pieces[_id]=piece
