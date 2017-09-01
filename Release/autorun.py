@@ -134,7 +134,25 @@ def new_piece_from_stack():
 def get_title():
 	return '部门：%s  姓名：%s'%(department,user_name)
 
-def fill_data(st,pieces,r0):
+def fill_data(st,pieces):
+	#find a line have title
+	_r=1
+	for r in range(1,10):
+		if st.get_text(r,1):
+			_r=r
+			break
+	#find the 1st blank line as r0.
+	L=len(pieces[0])
+	r0=0
+	for r in range(_r+1,20):
+		r0=r
+		for c in range(1,L+1):
+			if st.get_text(r,c):
+				r0=0
+				continue
+		if r0:
+			break
+	#fill from the 1st blank line.
 	for r,pc in enumerate(pieces,r0):
 		for c,x in enumerate(pc,1):
 			st.set_text(r,c,x)
@@ -157,7 +175,8 @@ def export_xls():
 			st1=bk1.sheets[0]
 			st1.copy_before(st2)
 			stnew=bk2.sheets[-4]
-			fill_data(stnew,pcs,5 if x=='耕保科' else 2)
+			fill_data(stnew,pcs)
+			stnew.name=x
 	for st in bk2.sheets[-3:]:
 		st.raw.Delete()
 	bk2.saveas(fn)
