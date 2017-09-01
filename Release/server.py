@@ -9,7 +9,7 @@ class writer():
 		pass
 import sys
 sys.stderr=writer()
-print('服务正在运行中...')
+print('数据服务V1.0.0.1正在运行中...')
 #################################################
 def encrypt(s):
     import base64
@@ -115,8 +115,8 @@ def delete_piece(name,_id):
 		pth=pc[2]
 		if pth[0]==name:
 			g_pieces.pop(_id)
-			return 1
 			save_pieces()
+			return 1
 		return 0
 	except:
 		return 0
@@ -147,4 +147,4 @@ def get_export_data(token):
 svr.reg_fun(get_export_data)
 
 load_pieces()
-svr.run(0)
+svr.run(1)
