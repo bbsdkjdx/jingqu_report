@@ -81,7 +81,7 @@ def upload_piece(piece):
 	return 1
 svr.reg_fun(upload_piece)
 #%%
-def submit_piece(name,_id):
+def submit_piece(name,_id):#do not change id
 	if _id not in g_pieces or name not in g_users:
 		return 0
 	piece=g_pieces[_id]
@@ -95,7 +95,7 @@ def submit_piece(name,_id):
 	return 1
 svr.reg_fun(submit_piece)
 #%%
-def dismiss_piece(name,_id):
+def dismiss_piece(name,_id):#do not change id
 	if _id not in g_pieces:
 		return 0
 	pc=g_pieces[_id]
@@ -109,7 +109,7 @@ def dismiss_piece(name,_id):
 	return 1
 svr.reg_fun(dismiss_piece)
 #%%
-def delete_piece(name,_id):
+def delete_piece(name,_id):#do not change id
 	try:
 		pc=g_pieces[_id]
 		pth=pc[2]
@@ -122,19 +122,10 @@ def delete_piece(name,_id):
 		return 0
 svr.reg_fun(delete_piece)
 #%%
-def refresh(name):
+def refresh(name):#do not change id
 	return [x for x in g_pieces.values() if x[2][-1]==name]
 svr.reg_fun(refresh)
 #%%
-def get_r0_base0(name):
-	try:
-		dep=g_users[name][2]
-		if dep=='耕保科':
-			return 4
-		return 1
-	except:
-		return -1
-svr.reg_fun(get_r0_base0)
 
 def get_export_data(token):
 	name=decrypt(token)
