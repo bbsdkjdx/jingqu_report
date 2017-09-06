@@ -10,7 +10,6 @@ class writer():
 		pass
 import sys
 sys.stderr=writer()
-print('数据服务V1.0.0.1正在运行中...')
 #################################################
 def encrypt(s):
     import base64
@@ -32,10 +31,10 @@ def save_one_piece(pc):
 	with open(DB_FILE,'a') as f:
 		f.write(json.dumps(pc)+'\n')
 
-def load_pieces1():
+def load_pieces():
 	global g_pieces
 	cnt=0
-	print('正在加载数据库...',end='')
+	print('正在加载数据库...')
 	try:
 		with open(DB_FILE,'r') as f:
 			for ln in f:
@@ -47,21 +46,24 @@ def load_pieces1():
 				else:
 					g_pieces[obj[0]]=obj
 	except:
-		pass
-	print('ok.')
-	if cnt>len(g_pieces)*2:
-		print('正在压缩数据库...',end='')
-		import os
-		os.remove(DB_FILE)
-		with open(DB_FILE,'a') as f:
-			for pc in g_pieces.values():
-				f.write(json.dumps(pc)+'\n')
-		print('ok.')
+		load_pieces_old_db()
+	print('操作记录%d条，实有数据%d条。'%(cnt,len(g_pieces)))
+	if cnt>len(g_pieces)*2 or cnt==0:#need compact or load old db.
+		compact_db()
 
-def load_pieces():
+def compact_db():
+	print('正在压缩数据库...')
+	open(DB_FILE,'w')
+	with open(DB_FILE,'a') as f:
+		for pc in g_pieces.values():
+			f.write(json.dumps(pc)+'\n')
+	print('数据库压缩完成。')
+
+def load_pieces_old_db():
 	global g_pieces
 	try:
 		g_pieces=json.load(open('pieces.dat','r'))
+		print('导入旧版数据库记录%d条。'%(len(g_pieces)))
 	except:
 		pass
 ##############################################
@@ -168,5 +170,6 @@ def get_export_data(token):
 	return ret
 svr.reg_fun(get_export_data)
 
-load_pieces1()
+load_pieces()
+print('数据服务V1.0.0.1正在运行中...')
 svr.run(1)
