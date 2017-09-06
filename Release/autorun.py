@@ -119,10 +119,7 @@ def load_excel():
 	import xlrd
 	book = xlrd.open_workbook(fn)
 	st = book.sheet_by_index(0)
-	r0=cln.get_r0_base0(user_name)
-	if r0==-1:
-		msgbox('导入失败！')
-		return
+	r0=4 if '耕保' in department else 1 
 	for r in range(r0,st.nrows):
 		data=[str(x) for x in st.row_values(r)]
 		add_new_piece(data)

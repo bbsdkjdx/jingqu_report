@@ -1,6 +1,7 @@
 import rpc
 import json
 ####### common userd function ###############################################
+DB_FILE='pieces.acc_db'
 
 class writer():
 	def __init__(self):
@@ -26,6 +27,36 @@ def decrypt(s):
 def save_pieces():
 	global g_pieces
 	json.dump(g_pieces,open('pieces.dat','w'))
+
+def save_one_piece(pc):
+	with open(DB_FILE,'a') as f:
+		f.write(json.dumps(pc)+'\n')
+
+def load_pieces1():
+	global g_pieces
+	cnt=0
+	print('正在加载数据库...',end='')
+	try:
+		with open(DB_FILE,'r') as f:
+			for ln in f:
+				cnt+=1
+				obj=json.loads(ln)
+				if type(obj) is str:
+					if obj in g_pieces:
+						g_pieces.pop(obj)
+				else:
+					g_pieces[obj[0]]=obj
+	except:
+		pass
+	print('ok.')
+	if cnt>len(g_pieces)*2:
+		print('正在压缩数据库...',end='')
+		import os
+		os.remove(DB_FILE)
+		with open(DB_FILE,'a') as f:
+			for pc in g_pieces.values():
+				f.write(json.dumps(pc)+'\n')
+		print('ok.')
 
 def load_pieces():
 	global g_pieces
@@ -77,7 +108,7 @@ svr.reg_fun(login)
 #%%
 def upload_piece(piece):
 	g_pieces[piece[0]]=piece
-	save_pieces()
+	save_one_piece(piece)
 	return 1
 svr.reg_fun(upload_piece)
 #%%
@@ -91,7 +122,7 @@ def submit_piece(name,_id):#do not change id
 	piece[1]=name#from
 	piece[2].append(ldr)#path
 	g_pieces[_id]=piece
-	save_pieces()
+	save_one_piece(piece)
 	return 1
 svr.reg_fun(submit_piece)
 #%%
@@ -105,7 +136,7 @@ def dismiss_piece(name,_id):#do not change id
 	pc[1]=name
 	pc[2].pop(-1)
 	g_pieces[_id]=pc
-	save_pieces()
+	save_one_piece(pc)
 	return 1
 svr.reg_fun(dismiss_piece)
 #%%
@@ -115,7 +146,7 @@ def delete_piece(name,_id):#do not change id
 		pth=pc[2]
 		if pth[0]==name:
 			g_pieces.pop(_id)
-			save_pieces()
+			save_one_piece(_id)
 			return 1
 		return 0
 	except:
@@ -137,5 +168,5 @@ def get_export_data(token):
 	return ret
 svr.reg_fun(get_export_data)
 
-load_pieces()
+load_pieces1()
 svr.run(1)
