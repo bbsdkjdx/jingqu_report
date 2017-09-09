@@ -1,6 +1,7 @@
 import rpc
 import json
 ####### common userd function ###############################################
+DB_FILE='pieces.acc_db'
 
 class writer():
 	def __init__(self):
@@ -9,7 +10,6 @@ class writer():
 		pass
 import sys
 sys.stderr=writer()
-print('数据服务V1.0.0.1正在运行中...')
 #################################################
 def encrypt(s):
     import base64
@@ -27,10 +27,43 @@ def save_pieces():
 	global g_pieces
 	json.dump(g_pieces,open('pieces.dat','w'))
 
+def save_one_piece(pc):
+	with open(DB_FILE,'a') as f:
+		f.write(json.dumps(pc)+'\n')
+
 def load_pieces():
+	global g_pieces
+	cnt=0
+	print('正在加载数据库...')
+	try:
+		with open(DB_FILE,'r') as f:
+			for ln in f:
+				cnt+=1
+				obj=json.loads(ln)
+				if type(obj) is str:
+					if obj in g_pieces:
+						g_pieces.pop(obj)
+				else:
+					g_pieces[obj[0]]=obj
+	except:
+		load_pieces_old_db()
+	print('操作记录%d条，实有数据%d条。'%(cnt,len(g_pieces)))
+	if cnt>len(g_pieces)*2 or cnt==0:#need compact or load old db.
+		compact_db()
+
+def compact_db():
+	print('正在压缩数据库...')
+	open(DB_FILE,'w')
+	with open(DB_FILE,'a') as f:
+		for pc in g_pieces.values():
+			f.write(json.dumps(pc)+'\n')
+	print('数据库压缩完成。')
+
+def load_pieces_old_db():
 	global g_pieces
 	try:
 		g_pieces=json.load(open('pieces.dat','r'))
+		print('导入旧版数据库记录%d条。'%(len(g_pieces)))
 	except:
 		pass
 ##############################################
@@ -77,11 +110,11 @@ svr.reg_fun(login)
 #%%
 def upload_piece(piece):
 	g_pieces[piece[0]]=piece
-	save_pieces()
+	save_one_piece(piece)
 	return 1
 svr.reg_fun(upload_piece)
 #%%
-def submit_piece(name,_id):
+def submit_piece(name,_id):#do not change id
 	if _id not in g_pieces or name not in g_users:
 		return 0
 	piece=g_pieces[_id]
@@ -91,11 +124,11 @@ def submit_piece(name,_id):
 	piece[1]=name#from
 	piece[2].append(ldr)#path
 	g_pieces[_id]=piece
-	save_pieces()
+	save_one_piece(piece)
 	return 1
 svr.reg_fun(submit_piece)
 #%%
-def dismiss_piece(name,_id):
+def dismiss_piece(name,_id):#do not change id
 	if _id not in g_pieces:
 		return 0
 	pc=g_pieces[_id]
@@ -105,36 +138,27 @@ def dismiss_piece(name,_id):
 	pc[1]=name
 	pc[2].pop(-1)
 	g_pieces[_id]=pc
-	save_pieces()
+	save_one_piece(pc)
 	return 1
 svr.reg_fun(dismiss_piece)
 #%%
-def delete_piece(name,_id):
+def delete_piece(name,_id):#do not change id
 	try:
 		pc=g_pieces[_id]
 		pth=pc[2]
 		if pth[0]==name:
 			g_pieces.pop(_id)
-			save_pieces()
+			save_one_piece(_id)
 			return 1
 		return 0
 	except:
 		return 0
 svr.reg_fun(delete_piece)
 #%%
-def refresh(name):
+def refresh(name):#do not change id
 	return [x for x in g_pieces.values() if x[2][-1]==name]
 svr.reg_fun(refresh)
 #%%
-def get_r0_base0(name):
-	try:
-		dep=g_users[name][2]
-		if dep=='耕保科':
-			return 4
-		return 1
-	except:
-		return -1
-svr.reg_fun(get_r0_base0)
 
 def get_export_data(token):
 	name=decrypt(token)
@@ -147,4 +171,5 @@ def get_export_data(token):
 svr.reg_fun(get_export_data)
 
 load_pieces()
+print('数据服务V1.0.0.1正在运行中...')
 svr.run(1)
