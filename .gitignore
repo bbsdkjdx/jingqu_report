@@ -92,3 +92,5 @@ Release/MFCApplication5.exe
 Release/pieces.dat
 Release/pieces.dat
 Release/login.json
+Release/pieces.acc_db
+Release/history.acc_db

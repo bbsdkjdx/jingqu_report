@@ -1,5 +1,6 @@
 import rpc
 import json
+import time
 ####### common userd function ###############################################
 DB_FILE='pieces.acc_db'
 
@@ -146,7 +147,14 @@ def delete_piece(name,_id):#do not change id
 	try:
 		pc=g_pieces[_id]
 		pth=pc[2]
-		if pth[0]==name:
+		if pth[0]==name:#common delete
+			g_pieces.pop(_id)
+			save_one_piece(_id)
+			return 1
+		if g_users[name][2]=='财务科':
+			#cw delete and save history.
+			with open('history.acc_db','a') as f:
+				f.write(json.dumps(pc)+'\n')
 			g_pieces.pop(_id)
 			save_one_piece(_id)
 			return 1
@@ -171,5 +179,5 @@ def get_export_data(token):
 svr.reg_fun(get_export_data)
 
 load_pieces()
-print('数据服务V1.0.0.1正在运行中...')
+print('数据服务V1.0.0.2正在运行中...')
 svr.run(1)
