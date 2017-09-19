@@ -107,6 +107,7 @@ BEGIN_MESSAGE_MAP(CMFCApplication5Dlg, CDialogEx)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CMFCApplication5Dlg::OnLvnItemchangedList1)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CMFCApplication5Dlg::OnDblclkList1)
 	ON_NOTIFY(NM_RCLICK, IDC_LIST1, &CMFCApplication5Dlg::OnRclickList1)
+	ON_BN_CLICKED(IDC_BUTTON8, &CMFCApplication5Dlg::OnBnClickedButton8)
 END_MESSAGE_MAP()
 
 
@@ -241,7 +242,7 @@ void CMFCApplication5Dlg::OnSize(UINT nType, int cx, int cy)
 	CDialogEx::OnSize(nType, cx, cy);
 
 	CRect rct;
-	for (int x = IDC_BUTTON1; x <= IDC_BUTTON7;++x)
+	for (int x = IDC_BUTTON1; x <= IDC_BUTTON8;++x)
 	{
 		CWnd *pwnd = GetDlgItem(x);
 		if (!pwnd)
@@ -456,4 +457,10 @@ void CMFCApplication5Dlg::OnRclickList1(NMHDR *pNMHDR, LRESULT *pResult)
 		CloseClipboard();
 	}
 	*pResult = 0;
+}
+
+
+void CMFCApplication5Dlg::OnBnClickedButton8()
+{
+	// TODO:  在此添加控件通知处理程序代码
 }
