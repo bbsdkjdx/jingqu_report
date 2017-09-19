@@ -157,7 +157,9 @@ def fill_data(st,pieces):
 
 def export_xls():
 	fn=__main__.stack__[0]
-	dic=cln.get_export_data(token)
+	b_history=__main__.stack__[1]
+	t1,t2=__main__.stack__[2:4]
+	dic=cln.get_export_data(token,b_history,t1,t2)
 	if not dic:
 		return
 	import office

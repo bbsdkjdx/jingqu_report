@@ -168,14 +168,30 @@ def refresh(name):#do not change id
 svr.reg_fun(refresh)
 #%%
 
-def get_export_data(token):
+def get_export_data(token,b_history,t1,t2):
 	name=decrypt(token)
-	pcs=[x for x in g_pieces.values() if x[2][-1]==name]
-	ret=dict()
-	for pc in pcs:
-		dep=g_users[pc[1]][-1]
-		ret.setdefault(dep,[]).append(pc[-1])
-	return ret
+	if not b_history:
+		pcs=[x for x in g_pieces.values() if x[2][-1]==name]
+		ret=dict()
+		for pc in pcs:
+			dep=g_users[pc[1]][-1]
+			ret.setdefault(dep,[]).append(pc[-1])
+		return ret
+	else:
+		time1=time.strptime(t1,'%Y年%m月%d日')
+		time1=time.mktime(time1)
+		time2=time.strptime(t2,'%Y年%m月%d日')
+		time2=time.mktime(time2)
+		if time1>time2:
+			time1,time2=time2,time1
+		ret=dict()
+		with open('history.acc_db','r') as f:
+			for ln in f:
+				pc=json.loads(ln)
+				if time1<float(pc[0])<time2:
+					dep=g_users[pc[1]][-1]
+					ret.setdefault(dep,[]).append(pc[-1])
+		return ret
 svr.reg_fun(get_export_data)
 
 load_pieces()

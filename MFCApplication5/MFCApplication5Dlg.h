@@ -51,4 +51,6 @@ public:
 	void ShowSelectedItem(bool bCanEdit);
 	afx_msg void OnRclickList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButton8();
+protected:
+	void ExportData(bool history);
 };

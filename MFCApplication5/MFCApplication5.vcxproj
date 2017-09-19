@@ -154,6 +154,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DateDlg.h" />
     <ClInclude Include="DlgLogIn.h" />
     <ClInclude Include="ListEditor.h" />
     <ClInclude Include="MFCApplication5.h" />
@@ -165,6 +166,7 @@
     <ClInclude Include="ViewDlg.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DateDlg.cpp" />
     <ClCompile Include="DlgLogIn.cpp" />
     <ClCompile Include="ListEditor.cpp" />
     <ClCompile Include="MFCApplication5.cpp" />

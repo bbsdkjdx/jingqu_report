@@ -9,6 +9,7 @@
 #include "DlgLogIn.h"
 #include "python_support.h"
 #include "ViewDlg.h"
+#include "DateDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -280,26 +281,7 @@ void CMFCApplication5Dlg::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 
 void CMFCApplication5Dlg::OnBnClickedButton2()
 {
-	if (m_list.GetItemCount()==0)
-	{
-		return;
-	}
-
-	BOOL isOpen = FALSE;     //是否打开(否则为保存)  
-	CString defaultDir = L"";   //默认打开的文件路径  
-	CString fileName = L"";         //默认打开的文件名  
-	CString filter = L"文件 (*.xlsx; *.xls)|*.xlsx;*.xls||";   //文件过虑的类型  
-	CFileDialog openFileDlg(isOpen, defaultDir, fileName, OFN_HIDEREADONLY | OFN_READONLY, filter, NULL);
-	openFileDlg.GetOFN().lpstrInitialDir = L"";
-	INT_PTR result = openFileDlg.DoModal();
-	CString cmd;
-	if (result == IDOK)
-	{      
-		PySetStrW(openFileDlg.GetPathName().GetBuffer(), 0);
-		PyExecW(_T("autorun.export_xls()"));
-		AfxMessageBox(_T("导出成功"));
-		//PyExecA("autorun.load_excel()");
-	}
+	ExportData(0);
 }
 
 
@@ -462,5 +444,38 @@ void CMFCApplication5Dlg::OnRclickList1(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CMFCApplication5Dlg::OnBnClickedButton8()
 {
-	// TODO:  在此添加控件通知处理程序代码
+	CDateDlg cdd;
+	if (cdd.DoModal() == IDOK)
+	{
+		PySetStrW(cdd.m_time1.GetBuffer(), 2);
+		PySetStrW(cdd.m_time2.GetBuffer(), 3);
+		ExportData(true);
+	}
+	//ExportData(true);
+}
+
+
+void CMFCApplication5Dlg::ExportData(bool history)
+{
+	if (!history&& m_list.GetItemCount() == 0)
+	{
+		return;
+	}
+
+	BOOL isOpen = FALSE;     //是否打开(否则为保存)  
+	CString defaultDir = L"";   //默认打开的文件路径  
+	CString fileName = L"";         //默认打开的文件名  
+	CString filter = L"文件 (*.xlsx; *.xls)|*.xlsx;*.xls||";   //文件过虑的类型  
+	CFileDialog openFileDlg(isOpen, defaultDir, fileName, OFN_HIDEREADONLY | OFN_READONLY, filter, NULL);
+	openFileDlg.GetOFN().lpstrInitialDir = L"";
+	INT_PTR result = openFileDlg.DoModal();
+	CString cmd;
+	if (result == IDOK)
+	{
+		PySetStrW(openFileDlg.GetPathName().GetBuffer(), 0);
+		PySetInt(history ? 1 : 0, 1);
+		PyExecW(_T("autorun.export_xls()"));
+		AfxMessageBox(_T("导出成功"));
+		//PyExecA("autorun.load_excel()");
+	}
 }
