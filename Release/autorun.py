@@ -119,7 +119,7 @@ def load_excel():
 	import xlrd
 	book = xlrd.open_workbook(fn)
 	st = book.sheet_by_index(0)
-	r0=4 if '耕保' in department else 1 
+	r0=4 if '耕保' in department else 1
 	for r in range(r0,st.nrows):
 		data=[str(x) for x in st.row_values(r)]
 		add_new_piece(data)
@@ -139,7 +139,7 @@ def fill_data(st,pieces):
 			_r=r
 			break
 	#find the 1st blank line as r0.
-	L=len(pieces[0])
+	L=len(pieces[0][-1])
 	r0=0
 	for r in range(_r+1,20):
 		r0=r
@@ -151,7 +151,10 @@ def fill_data(st,pieces):
 			break
 	#fill from the 1st blank line.
 	for r,pc in enumerate(pieces,r0):
-		for c,x in enumerate(pc,1):
+		ttp=time.gmtime(float(pc[0]))
+		stime=time.strftime('%Y.%m.%d',ttp)
+		pc[-1].append(stime)
+		for c,x in enumerate(pc[-1],1):
 			st.set_text(r,c,x)
 
 

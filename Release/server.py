@@ -175,7 +175,7 @@ def get_export_data(token,b_history,t1,t2):
 		ret=dict()
 		for pc in pcs:
 			dep=g_users[pc[1]][-1]
-			ret.setdefault(dep,[]).append(pc[-1])
+			ret.setdefault(dep,[]).append(pc)
 		return ret
 	else:
 		time1=time.strptime(t1,'%Y年%m月%d日')
@@ -188,9 +188,9 @@ def get_export_data(token,b_history,t1,t2):
 		with open('history.acc_db','r') as f:
 			for ln in f:
 				pc=json.loads(ln)
-				if time1<float(pc[0])<time2:
+				if time1<float(pc[0])<time2+3600*24:
 					dep=g_users[pc[1]][-1]
-					ret.setdefault(dep,[]).append(pc[-1])
+					ret.setdefault(dep,[]).append(pc)
 		return ret
 svr.reg_fun(get_export_data)
 
