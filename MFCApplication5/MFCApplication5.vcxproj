@@ -58,18 +58,18 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Python34\include;D:\Python34\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Python34\libs;D:\Python34\libs;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Python34\include;D:\Python34\include;$(IncludePath);.\include</IncludePath>
+    <LibraryPath>C:\Python34\libs;D:\Python34\libs;$(LibraryPath);.\libs</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Python344\include;D:\Python34\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Python344\libs;D:\Python34\libs;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Python344\include;D:\Python34\include;$(IncludePath);.\include</IncludePath>
+    <LibraryPath>C:\Python344\libs;D:\Python34\libs;$(LibraryPath);.\libs</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_dbg|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Python344\include;D:\Python34\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Python344\libs;D:\Python34\libs;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Python344\include;D:\Python34\include;$(IncludePath);.\include</IncludePath>
+    <LibraryPath>C:\Python344\libs;D:\Python34\libs;$(LibraryPath);.\libs</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

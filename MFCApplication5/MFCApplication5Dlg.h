@@ -53,4 +53,7 @@ public:
 	afx_msg void OnBnClickedButton8();
 protected:
 	void ExportData(bool history);
+//	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+public:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

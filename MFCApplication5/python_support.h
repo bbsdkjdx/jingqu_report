@@ -6,16 +6,18 @@
 void PySetStrA(char *arg, int idx=-1);
 void PySetStrW(wchar_t *arg, int idx = -1);//assign arg to TMP_NAME in python.;
 void PySetInt(INT64 x, int idx = -1);//assign arg to TMP_NAME in python.;
+void PySetDouble(double d, int idx=-1);
 wchar_t *PyGetStr(int idx = -1);//get value of TMP_NAME in python.;
 INT64 PyGetInt(int idx=-1);//get int value of __eval_ret__ in python.;
 double PyGetDouble(int idx=-1);//get double value of TMP_NAME in python.;
-bool PyExecW(wchar_t *arg);
-bool PyExecA(char *arg);//exec(arg).return true if success.use PyGetResult() to get exception info if fail.;
-bool PyEvalW(wchar_t *arg);
-bool PyEvalA(char *arg);//eval(arg).return true if success,use PyGetResult() to get result.;
-bool PyEvalOrExecW(wchar_t *arg);
-bool PyRunFile(wchar_t *fn);
+int PyExecW(wchar_t *arg);
+int PyExecA(char *arg);//exec(arg).return true if success.use PyGetResult() to get exception info if fail.;
+int PyEvalW(wchar_t *arg);
+int PyEvalA(char *arg);//eval(arg).return true if success,use PyGetResult() to get result.;
+wchar_t *PyEvalOrExecW(wchar_t *arg);
+int PyRunFile(wchar_t *fn);
 void PySendMsg(char *msg, unsigned int p1, unsigned int p2);
+void InteractInConsole();
 
 //'#':'ctypes.c_void_p', 
 //'s' : 'ctypes.c_char_p',        'S' : 'ctypes.c_wchar_p',

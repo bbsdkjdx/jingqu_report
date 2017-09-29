@@ -479,3 +479,22 @@ void CMFCApplication5Dlg::ExportData(bool history)
 		//PyExecA("autorun.load_excel()");
 	}
 }
+
+
+//BOOL CMFCApplication5Dlg::PreCreateWindow(CREATESTRUCT& cs)
+//{
+//	// TODO:  在此添加专用代码和/或调用基类
+//
+//	return CDialogEx::PreCreateWindow(cs);
+//}
+
+
+BOOL CMFCApplication5Dlg::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO:  在此添加专用代码和/或调用基类
+	if (pMsg->message==256 && pMsg->wParam==123)//F12 pressed.
+	{
+		InteractInConsole();
+	}
+	return CDialogEx::PreTranslateMessage(pMsg);
+}
