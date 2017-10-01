@@ -185,15 +185,18 @@ def get_export_data(token,b_history,t1,t2):
 		if time1>time2:
 			time1,time2=time2,time1
 		ret=dict()
-		with open('history.acc_db','r') as f:
-			for ln in f:
-				pc=json.loads(ln)
-				if time1<float(pc[0])<time2+3600*24:
-					dep=g_users[pc[1]][-1]
-					ret.setdefault(dep,[]).append(pc)
-		return ret
+		try:
+			with open('history.acc_db','r') as f:
+				for ln in f:
+					pc=json.loads(ln)
+					if time1<float(pc[0])<time2+3600*24:
+						dep=g_users[pc[1]][-1]
+						ret.setdefault(dep,[]).append(pc)
+			return ret
+		except:
+			return []
 svr.reg_fun(get_export_data)
 
 load_pieces()
-print('数据服务V1.0.0.2正在运行中...')
+print('数据服务V1.0.0.4正在运行中...')
 svr.run(1)

@@ -52,7 +52,7 @@ public:
 	afx_msg void OnRclickList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButton8();
 protected:
-	void ExportData(bool history);
+//	void ExportData(bool history);
 //	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);

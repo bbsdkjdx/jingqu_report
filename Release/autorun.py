@@ -4,6 +4,8 @@ import rpc
 import __main__
 import socket
 import time
+import os
+exe_dir=os.getcwd()
 socket.setdefaulttimeout(1)
 msgbox = lambda s: ctypes.windll.user32.MessageBoxW(ctypes.windll.user32.GetForegroundWindow(), str(s), '', 0)
 
@@ -158,22 +160,24 @@ def fill_data(st,pieces):
 			st.set_text(r,c,x)
 
 
-def export_xls():
-	fn=__main__.stack__[0]
-	b_history=__main__.stack__[1]
-	t1,t2=__main__.stack__[2:4]
+def export_xls(b_history):
+	t1,t2=__main__.stack__[:2]
 	dic=cln.get_export_data(token,b_history,t1,t2)
 	if not dic:
+		__main__.msgbox('没有需要导出的数据！')
 		return
+	import win32tools
 	import office
-	import os
+	fn=win32tools.select_file(0,'Excel 03\0*.xls\0Excel 07\0*.xlsx\0')
+	if not fn:
+		return
 	xls=office.Excel(0)
 	bk2=xls.new()
 	st2=bk2.sheets[0]
 	for x in ['耕保科','利用科','地籍科','不动产']:
 		if x in dic:
 			pcs=dic[x]
-			bk1=xls.open(os.path.join(os.getcwd(),x+'.template'))
+			bk1=xls.open(os.path.join(exe_dir,x+'.template'))
 			st1=bk1.sheets[0]
 			st1.copy_before(st2)
 			stnew=bk2.sheets[-4]
@@ -182,3 +186,4 @@ def export_xls():
 	for st in bk2.sheets[-3:]:
 		st.raw.Delete()
 	bk2.saveas(fn)
+	__main__.msgbox('导出完成！')
