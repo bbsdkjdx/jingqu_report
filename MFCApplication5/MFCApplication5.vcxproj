@@ -187,8 +187,10 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\Desktop\捕获.bmp" />
+    <Image Include="..\..\..\Desktop\bitbug_favicon.ico" />
     <Image Include="res\f14.ico" />
     <Image Include="res\icon1.ico" />
+    <Image Include="res\icon2.ico" />
     <Image Include="res\MFCApplication5.ico" />
     <Image Include="res\捕获.bmp" />
   </ItemGroup>

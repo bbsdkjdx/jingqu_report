@@ -44,7 +44,7 @@ def get_login_info():
 	__main__.stack__[1] = p
 	__main__.stack__[2] = s
 
-def set_login_info():
+def cache_login_info():
 	global user_name,cry_password,server_address
 	info=[0,0,0]
 	info[0]=__main__.stack__[0]
@@ -115,6 +115,7 @@ def refresh():
 	__main__.exe_fun__['delete_all_items']()
 	for pc in pcs:
 		grid_append_piece(pc)
+	return pcs
 
 def load_excel():
 	fn = __main__.stack__[0]

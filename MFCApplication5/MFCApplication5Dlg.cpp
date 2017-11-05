@@ -98,17 +98,17 @@ BEGIN_MESSAGE_MAP(CMFCApplication5Dlg, CDialogEx)
 	ON_WM_SIZE()
 	ON_BN_CLICKED(IDOK, &CMFCApplication5Dlg::OnBnClickedOk)
 	ON_WM_GETMINMAXINFO()
-	ON_BN_CLICKED(IDC_BUTTON2, &CMFCApplication5Dlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON2, &CMFCApplication5Dlg::OnExportXls)
 	ON_BN_CLICKED(IDC_BUTTON3, &CMFCApplication5Dlg::OnSubmit)
-	ON_BN_CLICKED(IDC_BUTTON1, &CMFCApplication5Dlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON1, &CMFCApplication5Dlg::OnImportXls)
 	ON_BN_CLICKED(IDC_BUTTON7, &CMFCApplication5Dlg::OnRefresh)
 	ON_BN_CLICKED(IDC_BUTTON4, &CMFCApplication5Dlg::OnDismiss)
-	ON_BN_CLICKED(IDC_BUTTON6, &CMFCApplication5Dlg::OnBnClickedButton6)
-	ON_BN_CLICKED(IDC_BUTTON5, &CMFCApplication5Dlg::OnBnClickedButton5)
+	ON_BN_CLICKED(IDC_BUTTON6, &CMFCApplication5Dlg::OnDeleteItem)
+	ON_BN_CLICKED(IDC_BUTTON5, &CMFCApplication5Dlg::OnNewOrEdit)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CMFCApplication5Dlg::OnLvnItemchangedList1)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CMFCApplication5Dlg::OnDblclkList1)
 	ON_NOTIFY(NM_RCLICK, IDC_LIST1, &CMFCApplication5Dlg::OnRclickList1)
-	ON_BN_CLICKED(IDC_BUTTON8, &CMFCApplication5Dlg::OnBnClickedButton8)
+	ON_BN_CLICKED(IDC_BUTTON8, &CMFCApplication5Dlg::OnExportHistory)
 END_MESSAGE_MAP()
 
 
@@ -180,7 +180,7 @@ BOOL CMFCApplication5Dlg::OnInitDialog()
 	m_list.SetWindowPos(0, 0, 0, rct.Width(), rct.Height()-h-10, SWP_NOOWNERZORDER);
 
 	REG_EXE_FUN(delete_all_items, "#", "");
-	REG_EXE_FUN(insert_item, "#lS", "");
+	REG_EXE_FUN(insert_item, "#lS", "void insert_item(int n, WCHAR *str)");
 	REG_EXE_FUN(set_item_text, "#llS", "");
 	REG_EXE_FUN(get_item_count, "l", "");
 	OnRefresh();
@@ -279,7 +279,7 @@ void CMFCApplication5Dlg::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 }
 
 
-void CMFCApplication5Dlg::OnBnClickedButton2()
+void CMFCApplication5Dlg::OnExportXls()
 {
 	PyExecA("autorun.export_xls(b_history=0)");
 }
@@ -291,7 +291,7 @@ void CMFCApplication5Dlg::OnSubmit()
 }
 
 
-void CMFCApplication5Dlg::OnBnClickedButton1()
+void CMFCApplication5Dlg::OnImportXls()
 {
 	BOOL isOpen = TRUE;     //是否打开(否则为保存)  
 	CString defaultDir = L"";   //默认打开的文件路径  
@@ -322,7 +322,7 @@ void CMFCApplication5Dlg::OnDismiss()
 }
 
 
-void CMFCApplication5Dlg::OnBnClickedButton6()
+void CMFCApplication5Dlg::OnDeleteItem()
 {
 	ListBatchOperate(_T("autorun.delete_piece"));
 }
@@ -350,7 +350,7 @@ int CMFCApplication5Dlg::ListBatchOperate(CString op)
 }
 
 
-void CMFCApplication5Dlg::OnBnClickedButton5()
+void CMFCApplication5Dlg::OnNewOrEdit()
 {
 	ShowSelectedItem(true);
 }
@@ -442,7 +442,7 @@ void CMFCApplication5Dlg::OnRclickList1(NMHDR *pNMHDR, LRESULT *pResult)
 }
 
 
-void CMFCApplication5Dlg::OnBnClickedButton8()
+void CMFCApplication5Dlg::OnExportHistory()
 {
 	CDateDlg cdd;
 	if (cdd.DoModal() == IDOK)
