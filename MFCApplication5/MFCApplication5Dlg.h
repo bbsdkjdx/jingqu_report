@@ -4,6 +4,7 @@
 
 #pragma once
 #include "afxcmn.h"
+#include "afxwin.h"
 
 
 // CMFCApplication5Dlg ¶Ô»°¿ò
@@ -56,4 +57,8 @@ protected:
 //	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	CComboBox m_table_id_ctrl;
+	afx_msg void OnSelchangeCombo1();
+	void DeleteAllColumns();
+	void InsertColumn(int n, WCHAR* s, int width);
 };

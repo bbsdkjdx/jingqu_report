@@ -44,6 +44,19 @@ int get_item_count()
 	return g_p_dlg->m_list.GetItemCount();
 }
 
+void delete_all_columns()
+{
+	if (!g_p_dlg)return;
+	g_p_dlg->DeleteAllColumns();
+}
+
+void insert_column(int n, WCHAR *s, int width)
+{
+	if (g_p_dlg)
+	{
+		g_p_dlg->InsertColumn(n, s, width);
+	}
+}
 
 class CAboutDlg : public CDialogEx
 {
@@ -89,6 +102,7 @@ void CMFCApplication5Dlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LIST1, m_list);
+	DDX_Control(pDX, IDC_COMBO1, m_table_id_ctrl);
 }
 
 BEGIN_MESSAGE_MAP(CMFCApplication5Dlg, CDialogEx)
@@ -109,6 +123,7 @@ BEGIN_MESSAGE_MAP(CMFCApplication5Dlg, CDialogEx)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CMFCApplication5Dlg::OnDblclkList1)
 	ON_NOTIFY(NM_RCLICK, IDC_LIST1, &CMFCApplication5Dlg::OnRclickList1)
 	ON_BN_CLICKED(IDC_BUTTON8, &CMFCApplication5Dlg::OnExportHistory)
+	ON_CBN_SELCHANGE(IDC_COMBO1, &CMFCApplication5Dlg::OnSelchangeCombo1)
 END_MESSAGE_MAP()
 
 
@@ -148,7 +163,9 @@ BOOL CMFCApplication5Dlg::OnInitDialog()
 	CDlgLogIn cdl;
 	if (!cdl.LogIn())
 	{
-		CDialogEx::OnOK();
+		PostMessage(WM_CLOSE, 0, 0);
+		return TRUE;
+		//CDialogEx::OnOK();
 	}
 	if (PyEvalA("autorun.get_title()"))
 	{
@@ -161,17 +178,7 @@ BOOL CMFCApplication5Dlg::OnInitDialog()
 	dwStyle |= LVS_EX_GRIDLINES;                    //网格线（report风格时）
 	m_list.SetExtendedStyle(dwStyle);            //设置扩展风格
 
-	PyEvalW(_T("autorun.get_table_head()"));
-	int len = (int)PyGetInt();
-	m_list.InsertColumn(0, _T("流水号"), 0, 0);
-	m_list.InsertColumn(1, _T("数据来源"), 0, 100);
-	m_list.InsertColumn(2, _T("数据状态"), 0, 100);
-	for (int x = 0; x < len; ++x)
-	{
-		CString str = PyGetStr(x);
-		m_list.InsertColumn(x+3, str, 0, str.GetLength()*20);
-	}
-
+	//place list ctrl.
 	CRect rct;
 	CWnd *pwnd = GetDlgItem(IDC_BUTTON1);
 	pwnd->GetWindowRect(&rct);
@@ -179,11 +186,25 @@ BOOL CMFCApplication5Dlg::OnInitDialog()
 	GetClientRect(&rct);
 	m_list.SetWindowPos(0, 0, 0, rct.Width(), rct.Height()-h-10, SWP_NOOWNERZORDER);
 
+	//reg functions for python.
 	REG_EXE_FUN(delete_all_items, "#", "");
 	REG_EXE_FUN(insert_item, "#lS", "void insert_item(int n, WCHAR *str)");
 	REG_EXE_FUN(set_item_text, "#llS", "");
 	REG_EXE_FUN(get_item_count, "l", "");
-	OnRefresh();
+	REG_EXE_FUN(delete_all_columns, "#", "");
+	REG_EXE_FUN(insert_column, "#lSl", "");
+
+	//fill tables combobox.
+	PyEvalW(_T("autorun.get_tables_id()"));
+	int len = (int)PyGetInt();
+	for (int x = 0; x < len; ++x)
+	{
+		m_table_id_ctrl.AddString(PyGetStr(x));
+	}
+	m_table_id_ctrl.SetCurSel(0);
+	OnSelchangeCombo1();
+
+	
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -200,9 +221,6 @@ void CMFCApplication5Dlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// 如果向对话框添加最小化按钮，则需要下面的代码
-//  来绘制该图标。  对于使用文档/视图模型的 MFC 应用程序，
-//  这将由框架自动完成。
 
 void CMFCApplication5Dlg::OnPaint()
 {
@@ -229,8 +247,7 @@ void CMFCApplication5Dlg::OnPaint()
 	}
 }
 
-//当用户拖动最小化窗口时系统调用此函数取得光标
-//显示。
+
 HCURSOR CMFCApplication5Dlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -238,14 +255,18 @@ HCURSOR CMFCApplication5Dlg::OnQueryDragIcon()
 
 
 
+int reloc_ctrl[] =//controls need to relocate when resizing window.
+{ IDC_BUTTON1, IDC_BUTTON2, IDC_BUTTON3, IDC_BUTTON4, IDC_BUTTON5, IDC_BUTTON6, IDC_BUTTON7, IDC_BUTTON8,IDC_COMBO1};
+
 void CMFCApplication5Dlg::OnSize(UINT nType, int cx, int cy)
 {
 	CDialogEx::OnSize(nType, cx, cy);
 
 	CRect rct;
-	for (int x = IDC_BUTTON1; x <= IDC_BUTTON8;++x)
+	for (int x = 0; x < sizeof(reloc_ctrl)/sizeof(int);++x)
 	{
-		CWnd *pwnd = GetDlgItem(x);
+		int cid = reloc_ctrl[x];
+		CWnd *pwnd = GetDlgItem(cid);
 		if (!pwnd)
 		{
 			return;
@@ -393,6 +414,7 @@ void CMFCApplication5Dlg::ShowSelectedItem(bool bCanEdit)
 	int pressok=cvd.ShowDetail(bCanEdit, title, data);
 	if (pressok && (bCanEdit || nItem==-1))//nItem==-1 is add new item.
 	{
+		//create new piece from input.
 		int n = 0;
 		for (n=0; n < L;++n)
 		{
@@ -400,6 +422,8 @@ void CMFCApplication5Dlg::ShowSelectedItem(bool bCanEdit)
 		}
 		PySetInt(0, n);
 		PyExecA("autorun.new_piece_from_stack()");
+
+		//if in edit mode,delete the old piece.
 		PySetStrW( nItem!=-1 ? m_list.GetItemText(nItem,0).GetBuffer():_T(""),0);
 		PyExecA("autorun.delete_piece(stack__[0])");
 		PyExecA("autorun.refresh()");
@@ -463,4 +487,32 @@ BOOL CMFCApplication5Dlg::PreTranslateMessage(MSG* pMsg)
 		InteractInConsole();
 	}
 	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+
+void CMFCApplication5Dlg::OnSelchangeCombo1()
+{
+	CString str;
+	m_table_id_ctrl.GetLBText(m_table_id_ctrl.GetCurSel(), str);
+	PySetStrW(str.GetBuffer(), 0);
+	PyExecA("autorun.switch_table()");
+	OnRefresh();
+}
+
+
+void CMFCApplication5Dlg::DeleteAllColumns()
+{
+	int nColumnCount = m_list.GetHeaderCtrl()->GetItemCount();
+
+	// Delete all of the columns. 
+	for (int i = 0; i < nColumnCount; i++)
+	{
+		m_list.DeleteColumn(0);
+	}
+}
+
+
+void CMFCApplication5Dlg::InsertColumn(int n, WCHAR* s, int width)
+{
+	m_list.InsertColumn(n, s, 0, width);
 }

@@ -15,9 +15,8 @@ cry_password=None
 server_address=None
 token=None
 department=None
-##################################################
-# [id,from,path,info]
-##################################################
+tid=None
+
 ####### common userd function ###############################################
 
 
@@ -68,8 +67,28 @@ def login():
 		return 0
 ###########################################################
 
+
+def get_tables_id():
+	ids=cln.get_tables_id(token)
+	L=len(ids)
+	__main__.stack__[:L]=ids
+	return L
+
+def switch_table():
+	global tid
+	tid=__main__.stack__[0]
+	th=cln.get_table_head(tid)
+	__main__.exe_fun__['delete_all_columns']()
+	insert_column=__main__.exe_fun__['insert_column']
+	insert_column(0,'流水号',0)
+	insert_column(1,'数据来源',100)
+	insert_column(2,'数据状态',100)
+	for n,x in enumerate(th,3):
+		insert_column(n,x,len(x)*20)
+
+
 def get_table_head():
-	heads=cln.get_table_head(token)
+	heads=cln.get_table_head(tid)
 	L=len(heads)
 	__main__.stack__[:L]=heads
 	return L
@@ -77,10 +96,10 @@ def get_table_head():
 def add_new_piece(data):
 	id=str(time.time())
 	time.sleep(0.001)#make sure no id is equal.
-	piece=[id,user_name,[user_name],data]
+	piece=[id,user_name,[user_name],tid,data]
 	try:
 		cln.upload_piece(piece)
-		grid_append_piece(piece)
+		refresh()
 	except Exception as exp:
 		msgbox(str(exp))
 
@@ -92,8 +111,7 @@ def get_piece_status(frm,pth):
 	return '待审核'
 
 def grid_append_piece(piece):
-	# [id,from,path,info]
-	_id,frm,pth,info=piece
+	_id,frm,pth,_tid,info=piece
 	cnt=__main__.exe_fun__['get_item_count']()
 	__main__.exe_fun__['insert_item'](cnt,_id)
 	__main__.exe_fun__['set_item_text'](cnt,1,frm)
@@ -111,7 +129,7 @@ def delete_piece(_id):
 	cln.delete_piece(user_name,_id)
 
 def refresh():
-	pcs=cln.refresh(user_name)
+	pcs=cln.refresh(user_name,tid)
 	__main__.exe_fun__['delete_all_items']()
 	for pc in pcs:
 		grid_append_piece(pc)

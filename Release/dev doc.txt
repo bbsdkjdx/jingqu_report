@@ -1,0 +1,9 @@
+##################################################
+# [id,from,path,tid,info]
+
+# id:   unique identifier,is time snap.
+# from: the sender of the data.
+# path: the transport path of the data.
+# tid:  table id of the data.
+# info: the payload of the data.
+##################################################
