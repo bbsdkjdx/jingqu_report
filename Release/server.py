@@ -78,18 +78,20 @@ g_users={'gb1':['gb2',encrypt('123'),'耕保科'],
 
 g_pieces=dict()
 table_heads=dict()
+table_heads[0]=['所有数据（无详情）','']
 table_heads[1]=['耕地征用信息',['批次号','省批复文号','座落位置','报批亩数','报批公顷数','农用地小计','耕地','建设用地','未利用地','社保资金','土地补偿费','地上附着物','青苗费','占补平衡指标','被征地村居','批复日期','图件信息','影像资料','备注']]
 table_heads[2]=['国有土地出让信息',['受让方*','受让方法定代表人','土地位置*','土地面积（单位：平方米）','出让时间','出让总金额（单位：万元）','用途','年限','备注']]
 table_heads[3]=['国有土地使用权出让转让合同',['出（转）让方*','出（转）让方法定代表人','受让方*','受让方法定代表人','土地位置*','土地面积（单位：平方米）','出（转）让时间','出（转）让总金额（单位：万元）','备注']]
 table_heads[4]=['不动产登记发放信息',['序号','座落','土地权利人','不动产证书号','使用权类型','用途','面积（㎡）','宗地编码','变更日期','备注']]
 table_heads[5]=['国有土地使用权转让合同',['转让方','转让方法定代表人','受让方','受让方法定代表人','土地位置','土地面积（单位：平方米）','转让时间','转让总金额（单位：万元）','备注']]
 table_heads[6]=['国有土地使用权出让合同',['出让方','出让方法定代表人','受让方','受让方法定代表人','土地位置','土地面积（单位：平方米）','出让时间','出让总金额（单位：万元）','备注']]
+
 table_ids=dict()
 table_ids['耕保科']=[1]
 table_ids['利用科']=[2,6]
 table_ids['地籍科']=[3]
 table_ids['不动产']=[4,5]
-
+table_ids['财务科']=[0,1,2,3,4,5,6]
 svr=rpc.RpcSvr('0.0.0.0',9090)
 #%%
 def get_tables_id_name(token):
@@ -169,7 +171,7 @@ def delete_piece(name,_id):#do not change id
 svr.reg_fun(delete_piece)
 #%%
 def refresh(name,tid):#do not change id
-	return [x for x in g_pieces.values() if x[2][-1]==name and x[3]==tid]
+	return [x for x in g_pieces.values() if x[2][-1]==name and (tid==0 or x[3]==tid)]
 svr.reg_fun(refresh)
 #%%
 
@@ -203,5 +205,5 @@ def get_export_data(token,b_history,t1,t2):
 svr.reg_fun(get_export_data)
 
 load_pieces()
-print('数据服务V1.0.0.5正在运行中...')
+print('数据服务V1.0.0.6正在运行中...')
 svr.run(1)

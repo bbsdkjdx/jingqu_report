@@ -107,5 +107,8 @@
     <Image Include="..\..\..\Desktop\bitbug_favicon.ico">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="res\hd.ico">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>
