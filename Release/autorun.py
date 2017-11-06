@@ -68,11 +68,11 @@ def login():
 ###########################################################
 
 
-def get_tables_id():
-	ids=cln.get_tables_id(token)
-	L=len(ids)
-	__main__.stack__[:L]=ids
-	return L
+def fill_table_combo():
+	ids=cln.get_tables_id_name(token)
+	for n,(_id,name) in enumerate(ids):
+		__main__.exe_fun__['insert_combo_data'](n,name,_id)
+	return ids
 
 def switch_table():
 	global tid

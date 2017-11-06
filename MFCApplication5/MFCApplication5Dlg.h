@@ -61,4 +61,5 @@ public:
 	afx_msg void OnSelchangeCombo1();
 	void DeleteAllColumns();
 	void InsertColumn(int n, WCHAR* s, int width);
+	void InsertComboData(int n, WCHAR* s, int id);
 };

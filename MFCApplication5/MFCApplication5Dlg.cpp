@@ -58,6 +58,14 @@ void insert_column(int n, WCHAR *s, int width)
 	}
 }
 
+void insert_combo_data(int n, WCHAR *s, int id)
+{
+	if (g_p_dlg)
+	{
+		g_p_dlg->InsertComboData(n, s, id);
+	}
+}
+
 class CAboutDlg : public CDialogEx
 {
 public:
@@ -193,14 +201,10 @@ BOOL CMFCApplication5Dlg::OnInitDialog()
 	REG_EXE_FUN(get_item_count, "l", "");
 	REG_EXE_FUN(delete_all_columns, "#", "");
 	REG_EXE_FUN(insert_column, "#lSl", "");
+	REG_EXE_FUN(insert_combo_data, "#lSl", "");
 
 	//fill tables combobox.
-	PyEvalW(_T("autorun.get_tables_id()"));
-	int len = (int)PyGetInt();
-	for (int x = 0; x < len; ++x)
-	{
-		m_table_id_ctrl.AddString(PyGetStr(x));
-	}
+	PyEvalW(_T("autorun.fill_table_combo()"));
 	m_table_id_ctrl.SetCurSel(0);
 	OnSelchangeCombo1();
 
@@ -492,9 +496,7 @@ BOOL CMFCApplication5Dlg::PreTranslateMessage(MSG* pMsg)
 
 void CMFCApplication5Dlg::OnSelchangeCombo1()
 {
-	CString str;
-	m_table_id_ctrl.GetLBText(m_table_id_ctrl.GetCurSel(), str);
-	PySetStrW(str.GetBuffer(), 0);
+	PySetInt(m_table_id_ctrl.GetItemData(m_table_id_ctrl.GetCurSel()), 0);
 	PyExecA("autorun.switch_table()");
 	OnRefresh();
 }
@@ -515,4 +517,11 @@ void CMFCApplication5Dlg::DeleteAllColumns()
 void CMFCApplication5Dlg::InsertColumn(int n, WCHAR* s, int width)
 {
 	m_list.InsertColumn(n, s, 0, width);
+}
+
+
+void CMFCApplication5Dlg::InsertComboData(int n, WCHAR* s, int id)
+{
+	m_table_id_ctrl.InsertString(n, s);
+	m_table_id_ctrl.SetItemData(n, id);
 }
