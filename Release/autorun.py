@@ -5,6 +5,7 @@ import __main__
 import socket
 import time
 import os
+import binascii
 exe_dir=os.getcwd()
 socket.setdefaulttimeout(1)
 msgbox = lambda s: ctypes.windll.user32.MessageBoxW(ctypes.windll.user32.GetForegroundWindow(), str(s), '', 0)
@@ -99,7 +100,6 @@ def add_new_piece(data):
 	piece=[id,user_name,[user_name],tid,data]
 	try:
 		cln.upload_piece(piece)
-		refresh()
 	except Exception as exp:
 		msgbox(str(exp))
 
@@ -180,29 +180,57 @@ def fill_data(st,pieces):
 
 
 def export_xls(b_history):
-	t1,t2=__main__.stack__[:2]
-	dic=cln.get_export_data(token,b_history,t1,t2)
-	if not dic:
-		__main__.msgbox('没有需要导出的数据！')
-		return
 	import win32tools
 	import office
+	t1,t2=__main__.stack__[:2]
+	li=cln.get_export_data(token,b_history,t1,t2)
+	if not li:
+		__main__.msgbox('没有需要导出的数据！')
+		return
 	fn=win32tools.select_file(0,'Excel 03\0*.xls\0Excel 07\0*.xlsx\0')
 	if not fn:
 		return
+
+	dic=dict()
+	for x in li:
+		tid=x[3]
+		if tid in dic:
+			dic[tid].append(x)
+		else:
+			dic[tid]=[x]
+
 	xls=office.Excel(0)
-	bk2=xls.new()
+	bk2=xls.new()#for save
 	st2=bk2.sheets[0]
-	for x in ['耕保科','利用科','地籍科','不动产']:
-		if x in dic:
-			pcs=dic[x]
-			bk1=xls.open(os.path.join(exe_dir,x+'.template'))
-			st1=bk1.sheets[0]
-			st1.copy_before(st2)
-			stnew=bk2.sheets[-4]
-			fill_data(stnew,pcs)
-			stnew.name=x
+	bk1=xls.open(os.path.join(exe_dir,'template.xls'))
+	st0=bk1.sheets[0]#for read r0,c0
+#todo:somethin wrong here!!!!!
+	for tid in dic:
+		pcs=dic[tid]
+		try:
+			r0=st0.get_text(tid,1)
+			c0=st0.get_text(tid,2)
+		except Exception as ex:
+			msgbox(ex)
+		msgbox(r0,c0)
+		st1=bk1.sheets[tid]
+		name=st1.get_text(1,1)
+		st1.copy_before(st2)
+		#	stnew=bk2.sheets[-4]
+		#	fill_data(stnew,pcs)
+		#	stnew.name=x
 	for st in bk2.sheets[-3:]:
 		st.raw.Delete()
 	bk2.saveas(fn)
 	__main__.msgbox('导出完成！')
+
+def update_template():
+	try:
+		with open('template.xls','rb') as f:
+			dat=f.read()
+	except:
+		dat=b''
+	crc=str(binascii.crc32(dat))
+	newdat=cln.download_template(crc)
+	if newdat:
+		open('template.xls','wb').write(newdat.data)
