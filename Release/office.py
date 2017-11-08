@@ -27,6 +27,8 @@ class Excel(object):
         self.raw.Visible=visible
 
     def __del__(self):
+        if self.raw.Visible:
+            return
         for x in self.books:
             x.close()
         self.raw.Quit()

@@ -170,10 +170,11 @@ def export_xls(b_history):
 	if not li:
 		__main__.msgbox('没有需要导出的数据！')
 		return
-	fn=win32tools.select_file(0,'Excel 03\0*.xls\0Excel 07\0*.xlsx\0')
+	fn=win32tools.select_file(0,'Excel 03\0*.xls\0')
 	if not fn:
 		return
-
+	if '.xls' not in fn:
+		fn+='.xls'
 	dic=dict()
 	for x in li:
 		tid=x[3]
@@ -181,12 +182,11 @@ def export_xls(b_history):
 			dic[tid].append(x)
 		else:
 			dic[tid]=[x]
-	xls=office.Excel(0)
+	xls=office.Excel(1)
 	bk2=xls.new()#for save
 	st2=bk2.sheets[0]
 	bk1=xls.open(os.path.join(exe_dir,'template.xls'))
 	st0=bk1.sheets[0]#for read r0,c0
-#todo:somethin wrong here!!!!!
 	for _id in dic:
 		pcs=dic[_id]
 		r0=int(st0.get_text(_id,1))
@@ -200,6 +200,7 @@ def export_xls(b_history):
 	for st in bk2.sheets[-3:]:
 		st.raw.Delete()
 	bk2.saveas(fn)
+	bk1.close()
 	__main__.msgbox('导出完成！')
 
 def update_template():
