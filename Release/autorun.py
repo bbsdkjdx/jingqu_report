@@ -165,6 +165,7 @@ def fill_data(st,r0,c0,pieces):
 def export_xls(b_history):
 	import win32tools
 	import office
+	import os
 	t1,t2=__main__.stack__[:2]
 	li=cln.get_export_data(token,b_history,t1,t2)
 	if not li:
@@ -175,6 +176,8 @@ def export_xls(b_history):
 		return
 	if '.xls' not in fn:
 		fn+='.xls'
+	if os.path.isfile(fn):
+		os.remove(fn)
 	dic=dict()
 	for x in li:
 		tid=x[3]
