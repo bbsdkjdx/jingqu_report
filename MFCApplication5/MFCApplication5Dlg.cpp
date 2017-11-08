@@ -123,7 +123,7 @@ BEGIN_MESSAGE_MAP(CMFCApplication5Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON2, &CMFCApplication5Dlg::OnExportXls)
 	ON_BN_CLICKED(IDC_BUTTON3, &CMFCApplication5Dlg::OnSubmit)
 	ON_BN_CLICKED(IDC_BUTTON1, &CMFCApplication5Dlg::OnImportXls)
-	ON_BN_CLICKED(IDC_BUTTON7, &CMFCApplication5Dlg::OnRefresh)
+	ON_BN_CLICKED(IDC_BUTTON7, &CMFCApplication5Dlg::OnGetTemplate)
 	ON_BN_CLICKED(IDC_BUTTON4, &CMFCApplication5Dlg::OnDismiss)
 	ON_BN_CLICKED(IDC_BUTTON6, &CMFCApplication5Dlg::OnDeleteItem)
 	ON_BN_CLICKED(IDC_BUTTON5, &CMFCApplication5Dlg::OnNewOrEdit)
@@ -313,6 +313,7 @@ void CMFCApplication5Dlg::OnExportXls()
 void CMFCApplication5Dlg::OnSubmit()
 {
 	ListBatchOperate(_T("autorun.submit_piece"));
+	PyExecA("autorun.refresh()");
 }
 
 
@@ -331,25 +332,29 @@ void CMFCApplication5Dlg::OnImportXls()
 		PySetStrW(openFileDlg.GetPathName().GetBuffer(),0);
 		//PyExecW(_T("autorun.load_excel()"));
 		PyExecA("autorun.load_excel()");
+		PyExecA("autorun.refresh()");
+
 	}
 }
 
 
-void CMFCApplication5Dlg::OnRefresh()
+void CMFCApplication5Dlg::OnGetTemplate()
 {
-	PyExecW(_T("autorun.refresh()"));
+	PyExecW(_T("autorun.get_import_template()"));
 }
 
 
 void CMFCApplication5Dlg::OnDismiss()
 {
 	ListBatchOperate(_T("autorun.dismiss_piece"));
+	PyExecA("autorun.refresh()");
 }
 
 
 void CMFCApplication5Dlg::OnDeleteItem()
 {
 	ListBatchOperate(_T("autorun.delete_piece"));
+	PyExecA("autorun.refresh()");
 }
 
 
@@ -370,7 +375,6 @@ int CMFCApplication5Dlg::ListBatchOperate(CString op)
 			PyExecW(str.GetBuffer());
 		}
 	}
-	OnRefresh();
 	return 1;
 }
 
@@ -498,7 +502,7 @@ void CMFCApplication5Dlg::OnSelchangeCombo1()
 {
 	PySetInt(m_table_id_ctrl.GetItemData(m_table_id_ctrl.GetCurSel()), 0);
 	PyExecA("autorun.switch_table()");
-	OnRefresh();
+	PyExecA("autorun.refresh()");
 }
 
 

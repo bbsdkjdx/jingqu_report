@@ -6,6 +6,7 @@ import socket
 import time
 import os
 import binascii
+import win32tools
 exe_dir=os.getcwd()
 socket.setdefaulttimeout(1)
 msgbox = lambda s: ctypes.windll.user32.MessageBoxW(ctypes.windll.user32.GetForegroundWindow(), str(s), '', 0)
@@ -140,8 +141,7 @@ def load_excel():
 	import xlrd
 	book = xlrd.open_workbook(fn)
 	st = book.sheet_by_index(0)
-	r0=4 if '耕保' in department else 1
-	for r in range(r0,st.nrows):
+	for r in range(11,st.nrows):
 		data=[str(x) for x in st.row_values(r)]
 		add_new_piece(data)
 
@@ -163,9 +163,8 @@ def fill_data(st,r0,c0,pieces):
 
 
 def export_xls(b_history):
-	import win32tools
 	import office
-	import os
+	update_template()
 	t1,t2=__main__.stack__[:2]
 	li=cln.get_export_data(token,b_history,t1,t2)
 	if not li:
@@ -207,12 +206,26 @@ def export_xls(b_history):
 	__main__.msgbox('导出完成！')
 
 def update_template():
+	fn=os.path.join(exe_dir,'template.xls')
 	try:
-		with open('template.xls','rb') as f:
+		with open(fn,'rb') as f:
 			dat=f.read()
 	except:
 		dat=b''
 	crc=str(binascii.crc32(dat))
-	newdat=cln.download_template(crc)
+	newdat=cln.download_export_template(crc)
 	if newdat:
-		open('template.xls','wb').write(newdat.data)
+		open(fn,'wb').write(newdat.data)
+		return 1
+	return 0
+
+def get_import_template():
+	dat=cln.download_import_template(tid)
+	if dat:
+		fn=win32tools.select_file(1,'Excel 03\0*.xls\0')
+		if not fn:
+			return
+		if '.xls' not in fn:
+			fn+='.xls'
+		open(fn,'wb').write(dat.data)
+	msgbox('当前表格的模板已下载，请编辑并导入。')

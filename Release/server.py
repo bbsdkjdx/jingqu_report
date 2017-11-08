@@ -200,17 +200,23 @@ def get_export_data(token,b_history,t1,t2):
 			return []
 svr.reg_fun(get_export_data)
 
-def download_template(crc):
+def download_export_template(crc):
 	crc=int(crc)
-	dat=open('template.xls','rb').read()
+	dat=open('templates\\export.xls','rb').read()
 	if crc==binascii.crc32(dat):
 		return 0
 	return dat
-svr.reg_fun(download_template)
+svr.reg_fun(download_export_template)
 
+def download_import_template(tid):
+	fn='templates\\%d.xls' % (tid,)
+	with open(fn,'rb') as f:
+		return f.read()
+	return 0
+svr.reg_fun(download_import_template)
 
 
 
 load_pieces()
-print('数据服务V1.0.0.7正在运行中...')
+print('数据服务V1.0.0.8正在运行中...')
 svr.run(1)

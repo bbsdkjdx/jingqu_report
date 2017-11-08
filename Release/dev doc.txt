@@ -7,3 +7,7 @@
 # tid:  table id of the data.
 # info: the payload of the data.
 ##################################################
+加表步骤：
+1.给表格分配tid,更新table_ids和table_heads
+2.将表格加入templates\export.xls，增加“填写日期”一栏。在第一个表格加入r0,c0
+3.将表格制成导入模板，放到templates\下
