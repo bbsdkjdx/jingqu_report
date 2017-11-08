@@ -152,30 +152,13 @@ def new_piece_from_stack():
 def get_title():
 	return '部门：%s  姓名：%s'%(department,user_name)
 
-def fill_data(st,pieces):
-	#find a line have title
-	_r=1
-	for r in range(1,10):
-		if st.get_text(r,1):
-			_r=r
-			break
-	#find the 1st blank line as r0.
-	L=len(pieces[0][-1])
-	r0=0
-	for r in range(_r+1,20):
-		r0=r
-		for c in range(1,L+1):
-			if st.get_text(r,c):
-				r0=0
-				continue
-		if r0:
-			break
+def fill_data(st,r0,c0,pieces):
 	#fill from the 1st blank line.
 	for r,pc in enumerate(pieces,r0):
 		ttp=time.gmtime(float(pc[0]))
 		stime=time.strftime('%Y.%m.%d',ttp)
 		pc[-1].append(stime)
-		for c,x in enumerate(pc[-1],1):
+		for c,x in enumerate(pc[-1],c0):
 			st.set_text(r,c,x)
 
 
@@ -198,27 +181,22 @@ def export_xls(b_history):
 			dic[tid].append(x)
 		else:
 			dic[tid]=[x]
-
 	xls=office.Excel(0)
 	bk2=xls.new()#for save
 	st2=bk2.sheets[0]
 	bk1=xls.open(os.path.join(exe_dir,'template.xls'))
 	st0=bk1.sheets[0]#for read r0,c0
 #todo:somethin wrong here!!!!!
-	for tid in dic:
-		pcs=dic[tid]
-		try:
-			r0=st0.get_text(tid,1)
-			c0=st0.get_text(tid,2)
-		except Exception as ex:
-			msgbox(ex)
-		msgbox(r0,c0)
-		st1=bk1.sheets[tid]
+	for _id in dic:
+		pcs=dic[_id]
+		r0=int(st0.get_text(_id,1))
+		c0=int(st0.get_text(_id,2))
+		st1=bk1.sheets[_id]
 		name=st1.get_text(1,1)
 		st1.copy_before(st2)
-		#	stnew=bk2.sheets[-4]
-		#	fill_data(stnew,pcs)
-		#	stnew.name=x
+		stnew=bk2.sheets[-4]
+		fill_data(stnew,r0,c0,pcs)
+		stnew.name=name
 	for st in bk2.sheets[-3:]:
 		st.raw.Delete()
 	bk2.saveas(fn)
