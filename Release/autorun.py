@@ -141,8 +141,9 @@ def load_excel():
 	import xlrd
 	book = xlrd.open_workbook(fn)
 	st = book.sheet_by_index(0)
-	for r in range(11,st.nrows):
-		data=[str(x) for x in st.row_values(r)]
+	for r in range(10,st.nrows):
+		data=[int(x) if type(x) is float and int(x)==x else x for x in st.row_values(r)]
+		data=[str(x) for x in data]
 		add_new_piece(data)
 
 def new_piece_from_stack():
@@ -229,3 +230,13 @@ def get_import_template():
 			fn+='.xls'
 		open(fn,'wb').write(dat.data)
 	msgbox('当前表格的模板已下载，请编辑并导入。')
+
+def GridRange(rgn):
+	for x in [7,8,9,10]:
+		bd=rgn.Borders(x)
+		bd.LineStyle=1
+		bd.Weight=4
+	for x in [11,12]:
+		bd=rgn.Borders(x)
+		bd.LineStyle=1
+		bd.Weight=2

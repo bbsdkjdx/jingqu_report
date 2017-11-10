@@ -68,9 +68,9 @@ g_users={'gb1':['gb2',encrypt('123'),'耕保科'],
 'ly1':['ly2',encrypt('123'),'利用科'],
 'ly2':['ly3',encrypt('123'),'利用科'],
 'ly3':['cw',encrypt('123'),'利用科'],
-'dj1':['dj2',encrypt('123'),'地籍科'],
-'dj2':['dj3',encrypt('123'),'地籍科'],
-'dj3':['cw',encrypt('123'),'地籍科'],
+# 'dj1':['dj2',encrypt('123'),'地籍科'],
+# 'dj2':['dj3',encrypt('123'),'地籍科'],
+# 'dj3':['cw',encrypt('123'),'地籍科'],
 'bdc1':['bdc2',encrypt('123'),'不动产'],
 'bdc2':['bdc3',encrypt('123'),'不动产'],
 'bdc3':['cw',encrypt('123'),'不动产'],
@@ -92,7 +92,7 @@ table_ids['耕保科']=[1]
 table_ids['利用科']=[2,6]
 table_ids['地籍科']=[3]
 table_ids['不动产']=[4,5]
-table_ids['财务科']=[0,1,2,3,4,5,6]
+table_ids['财务科']=[0,1,2,4,5,6]
 svr=rpc.RpcSvr('0.0.0.0',9090)
 #%%
 def get_tables_id_name(token):
