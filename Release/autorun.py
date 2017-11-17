@@ -11,13 +11,17 @@ exe_dir=os.getcwd()
 socket.setdefaulttimeout(1)
 msgbox = lambda s: ctypes.windll.user32.MessageBoxW(ctypes.windll.user32.GetForegroundWindow(), str(s), '', 0)
 
-cln=None
-user_name=None
-cry_password=None
-server_address=None
-token=None
-department=None
-tid=None
+class CGlobal(object):
+	pass
+g_=CGlobal()
+		
+g_.cln=None
+g_.user_name=None
+g_.cry_password=None
+g_.server_address=None
+g_.token=None
+g_.department=None
+g_.tid=None
 
 ####### common userd function ###############################################
 
@@ -46,23 +50,21 @@ def get_login_info():
 	__main__.stack__[2] = s
 
 def cache_login_info():
-	global user_name,cry_password,server_address
 	info=[0,0,0]
 	info[0]=__main__.stack__[0]
 	info[1]=encrypt(__main__.stack__[1])
 	info[2]=__main__.stack__[2]
-	user_name,cry_password,server_address=info
+	g_.user_name,g_.cry_password,g_.server_address=info
 	json.dump(info, open('login.json', 'w'))
 
 def login():
-	global cln,token,user_name,department
 	try:
-		cln=rpc.RpcClient(server_address,9090)
-		b_ok,res=cln.login(user_name,cry_password)
+		g_.cln=rpc.RpcClient(g_.server_address,9090)
+		b_ok,res=g_.cln.login(g_.user_name,g_.cry_password)
 		if not b_ok:
 			msgbox(res)
 			return 0
-		token,user_name,department=res
+		g_.token,g_.user_name,g_.department=res
 		return 1
 	except:
 		msgbox('无法连接到服务器')
@@ -71,15 +73,14 @@ def login():
 
 
 def fill_table_combo():
-	ids=cln.get_tables_id_name(token)
+	ids=g_.cln.get_tables_id_name(g_.token)
 	for n,(_id,name) in enumerate(ids):
 		__main__.exe_fun__['insert_combo_data'](n,name,_id)
 	return ids
 
 def switch_table():
-	global tid
-	tid=__main__.stack__[0]
-	th=cln.get_table_head(tid)
+	g_.tid=__main__.stack__[0]
+	th=g_.cln.get_table_head(g_.tid)
 	__main__.exe_fun__['delete_all_columns']()
 	insert_column=__main__.exe_fun__['insert_column']
 	insert_column(0,'流水号',0)
@@ -90,7 +91,7 @@ def switch_table():
 
 
 def get_table_head():
-	heads=cln.get_table_head(tid)
+	heads=g_.cln.get_table_head(g_.tid)
 	L=len(heads)
 	__main__.stack__[:L]=heads
 	return L
@@ -98,9 +99,9 @@ def get_table_head():
 def add_new_piece(data):
 	id=str(time.time())
 	time.sleep(0.001)#make sure no id is equal.
-	piece=[id,user_name,[user_name],tid,data]
+	piece=[id,g_.user_name,[g_.user_name],g_.tid,data]
 	try:
-		cln.upload_piece(piece)
+		g_.cln.upload_piece(piece)
 	except Exception as exp:
 		msgbox(str(exp))
 
@@ -121,16 +122,16 @@ def grid_append_piece(piece):
 		__main__.exe_fun__['set_item_text'](cnt,n,x)
 
 def submit_piece(_id):
-	cln.submit_piece(user_name,_id)
+	g_.cln.submit_piece(g_.user_name,_id)
 
 def dismiss_piece(_id):
-	cln.dismiss_piece(user_name,_id)
+	g_.cln.dismiss_piece(g_.user_name,_id)
 
 def delete_piece(_id):
-	cln.delete_piece(user_name,_id)
+	g_.cln.delete_piece(g_.user_name,_id)
 
 def refresh():
-	pcs=cln.refresh(user_name,tid)
+	pcs=g_.cln.refresh(g_.user_name,g_.tid)
 	__main__.exe_fun__['delete_all_items']()
 	for pc in pcs:
 		grid_append_piece(pc)
@@ -151,7 +152,7 @@ def new_piece_from_stack():
 	add_new_piece(__main__.stack__[:pos_end])
 
 def get_title():
-	return '部门：%s  姓名：%s'%(department,user_name)
+	return '部门：%s  姓名：%s'%(g_.department,g_.user_name)
 
 def fill_data(st,r0,c0,pieces):
 	#fill from the 1st blank line.
@@ -167,7 +168,7 @@ def export_xls(b_history):
 	import office
 	update_template()
 	t1,t2=__main__.stack__[:2]
-	li=cln.get_export_data(token,b_history,t1,t2)
+	li=g_.cln.get_export_data(g_.token,b_history,t1,t2)
 	if not li:
 		__main__.msgbox('没有需要导出的数据！')
 		return
@@ -214,14 +215,14 @@ def update_template():
 	except:
 		dat=b''
 	crc=str(binascii.crc32(dat))
-	newdat=cln.download_export_template(crc)
+	newdat=g_.cln.download_export_template(crc)
 	if newdat:
 		open(fn,'wb').write(newdat.data)
 		return 1
 	return 0
 
 def get_import_template():
-	dat=cln.download_import_template(tid)
+	dat=g_.cln.download_import_template(g_.tid)
 	if dat:
 		fn=win32tools.select_file(1,'Excel 03\0*.xls\0')
 		if not fn:
