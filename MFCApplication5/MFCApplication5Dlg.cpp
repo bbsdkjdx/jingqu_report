@@ -47,14 +47,18 @@ int get_item_count()
 void delete_all_columns()
 {
 	if (!g_p_dlg)return;
-	g_p_dlg->DeleteAllColumns();
+	int nColumnCount = g_p_dlg->m_list.GetHeaderCtrl()->GetItemCount();
+	for (int i = 0; i < nColumnCount; i++)
+	{
+		g_p_dlg->m_list.DeleteColumn(0);
+	}
 }
 
 void insert_column(int n, WCHAR *s, int width)
 {
 	if (g_p_dlg)
 	{
-		g_p_dlg->InsertColumn(n, s, width);
+		g_p_dlg->m_list.InsertColumn(n, s, 0, width);
 	}
 }
 
@@ -62,7 +66,8 @@ void insert_combo_data(int n, WCHAR *s, int id)
 {
 	if (g_p_dlg)
 	{
-		g_p_dlg->InsertComboData(n, s, id);
+		g_p_dlg->m_table_id_ctrl.InsertString(n, s);
+		g_p_dlg->m_table_id_ctrl.SetItemData(n, id);
 	}
 }
 
@@ -505,27 +510,3 @@ void CMFCApplication5Dlg::OnSelchangeCombo1()
 	PyExecA("autorun.refresh()");
 }
 
-
-void CMFCApplication5Dlg::DeleteAllColumns()
-{
-	int nColumnCount = m_list.GetHeaderCtrl()->GetItemCount();
-
-	// Delete all of the columns. 
-	for (int i = 0; i < nColumnCount; i++)
-	{
-		m_list.DeleteColumn(0);
-	}
-}
-
-
-void CMFCApplication5Dlg::InsertColumn(int n, WCHAR* s, int width)
-{
-	m_list.InsertColumn(n, s, 0, width);
-}
-
-
-void CMFCApplication5Dlg::InsertComboData(int n, WCHAR* s, int id)
-{
-	m_table_id_ctrl.InsertString(n, s);
-	m_table_id_ctrl.SetItemData(n, id);
-}
