@@ -58,4 +58,5 @@ public:
 	CComboBox m_table_id_ctrl;
 	afx_msg void OnSelchangeCombo1();
 
+	afx_msg void OnRefresh();
 };
