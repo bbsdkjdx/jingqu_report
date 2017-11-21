@@ -38,17 +38,17 @@ public:
 	afx_msg void OnLvnBeginScrollList1(NMHDR *pNMHDR, LRESULT *pResult);
 	int ShowDetail(bool bCanEdit, vector<CString> & title, vector<CString> & data);
 //	afx_msg void OnCustomdrawList1(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
+//	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnDestroy();
 //	afx_msg void OnSetfocusList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButton1();
 	afx_msg void OnBnClickedButton2();
 //	afx_msg void OnLvnKeydownList1(NMHDR *pNMHDR, LRESULT *pResult);
 //	afx_msg void OnNMReturnList1(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+//	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 //	afx_msg void OnEnterPressed();
 	void StartEdit(int item, int sub_item);
-	afx_msg void OnEndscrollList1(NMHDR *pNMHDR, LRESULT *pResult);
+//	afx_msg void OnEndscrollList1(NMHDR *pNMHDR, LRESULT *pResult);
 protected:
 	afx_msg LRESULT OnPressEnter(WPARAM wParam, LPARAM lParam);
 };

@@ -35,13 +35,11 @@ BEGIN_MESSAGE_MAP(CViewDlg, CDialogEx)
 	ON_MESSAGE(WM_EDIT_LOST_FOCUS, &CViewDlg::OnEditLostFocus)
 	ON_NOTIFY(LVN_BEGINSCROLL, IDC_LIST1, &CViewDlg::OnLvnBeginScrollList1)
 //	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LIST1, &CViewDlg::OnCustomdrawList1)
-ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CViewDlg::OnLvnItemchangedList1)
 ON_WM_DESTROY()
 //ON_NOTIFY(NM_SETFOCUS, IDC_LIST1, &CViewDlg::OnSetfocusList1)
 ON_BN_CLICKED(IDC_BUTTON1, &CViewDlg::OnBnClickedButton1)
 ON_BN_CLICKED(IDC_BUTTON2, &CViewDlg::OnBnClickedButton2)
 ON_WM_KEYDOWN()
-ON_NOTIFY(LVN_ENDSCROLL, IDC_LIST1, &CViewDlg::OnEndscrollList1)
 ON_MESSAGE(12345, &CViewDlg::OnPressEnter)
 END_MESSAGE_MAP()
 
@@ -76,6 +74,7 @@ BOOL CViewDlg::OnInitDialog()
 	}
 	m_editor.Create(ES_AUTOHSCROLL | WS_CHILDWINDOW| ES_LEFT | ES_WANTRETURN | WS_BORDER, CRect(), this, 0);
 	m_editor.SetFont(m_list.GetFont());
+	GetDlgItem(IDC_BUTTON1)->EnableWindow(m_can_edit);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
 }
@@ -87,7 +86,7 @@ void CViewDlg::OnClickList1(NMHDR *pNMHDR, LRESULT *pResult)
 	if (pNMItemActivate->iSubItem==0 || !m_can_edit)return;
 	int item = pNMItemActivate->iItem;
 	int sub_item = pNMItemActivate->iSubItem;
-	StartEdit(item, sub_item);
+	//StartEdit(item, sub_item);
 	*pResult = 0;
 }
 
@@ -126,15 +125,6 @@ int CViewDlg::ShowDetail(bool bCanEdit, vector<CString> & title, vector<CString>
 }
 
 
-
-void CViewDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	// TODO:  在此添加控件通知处理程序代码
-	*pResult = 0;
-}
-
-
 void CViewDlg::OnDestroy()
 {
 	int L = m_p_data->size();
@@ -147,38 +137,19 @@ void CViewDlg::OnDestroy()
 	// TODO:  在此处添加消息处理程序代码
 }
 
-
-//void CViewDlg::OnSetfocusList1(NMHDR *pNMHDR, LRESULT *pResult)
-//{
-//	// TODO:  在此添加控件通知处理程序代码
-//	AfxMessageBox(_T(""));
-//	*pResult = 0;
-//}
-
-
 void CViewDlg::OnBnClickedButton1()
 {
 	OnOK();
 }
-
 
 void CViewDlg::OnBnClickedButton2()
 {
 	OnCancel();
 }
 
-void CViewDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
-{
-	// TODO:  在此添加消息处理程序代码和/或调用默认值
-	AfxMessageBox(_T("key down"));
-	CDialogEx::OnKeyDown(nChar, nRepCnt, nFlags);
-}
-
-
-
-
 void CViewDlg::StartEdit(int item, int sub_item)
 {
+	if (!m_can_edit)return;
 	m_list.EnableWindow(0);
 //	m_list.SetItemState(item, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
 	CRect rect;
@@ -194,18 +165,6 @@ void CViewDlg::StartEdit(int item, int sub_item)
 	m_editor.SetFocus();
 	m_editor.SetSel(-1);
 }
-
-
-void CViewDlg::OnEndscrollList1(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	// 此功能要求 Internet Explorer 5.5 或更高版本。
-	// 符号 _WIN32_IE 必须是 >= 0x0560。
-	LPNMLVSCROLL pStateChanged = reinterpret_cast<LPNMLVSCROLL>(pNMHDR);
-	// TODO:  在此添加控件通知处理程序代码
-//	AfxMessageBox(_T(""));
-	*pResult = 0;
-}
-
 
 afx_msg LRESULT CViewDlg::OnPressEnter(WPARAM wParam, LPARAM lParam)
 {
