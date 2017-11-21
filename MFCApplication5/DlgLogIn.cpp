@@ -48,7 +48,7 @@ void CDlgLogIn::OnBnClickedOk()
 	PySetStrW(str.GetBuffer(), 1);
 	m_edit_svr.GetWindowTextW(str);
 	PySetStrW(str.GetBuffer(), 2);
-	PyExecW(_T("autorun.set_login_info()"));
+	PyExecW(_T("autorun.cache_login_info()"));
 
 	PyEvalW(_T("autorun.login()"));
 	if (!PyGetInt())

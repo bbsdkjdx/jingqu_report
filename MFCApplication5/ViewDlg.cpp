@@ -35,11 +35,12 @@ BEGIN_MESSAGE_MAP(CViewDlg, CDialogEx)
 	ON_MESSAGE(WM_EDIT_LOST_FOCUS, &CViewDlg::OnEditLostFocus)
 	ON_NOTIFY(LVN_BEGINSCROLL, IDC_LIST1, &CViewDlg::OnLvnBeginScrollList1)
 //	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LIST1, &CViewDlg::OnCustomdrawList1)
-ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CViewDlg::OnLvnItemchangedList1)
 ON_WM_DESTROY()
 //ON_NOTIFY(NM_SETFOCUS, IDC_LIST1, &CViewDlg::OnSetfocusList1)
 ON_BN_CLICKED(IDC_BUTTON1, &CViewDlg::OnBnClickedButton1)
 ON_BN_CLICKED(IDC_BUTTON2, &CViewDlg::OnBnClickedButton2)
+ON_WM_KEYDOWN()
+ON_MESSAGE(12345, &CViewDlg::OnPressEnter)
 END_MESSAGE_MAP()
 
 
@@ -71,36 +72,21 @@ BOOL CViewDlg::OnInitDialog()
 		m_list.InsertItem(n, (*m_p_title)[n]);
 		m_list.SetItemText(n, 1, (*m_p_data)[n]);
 	}
-	m_editor.Create(ES_AUTOHSCROLL | WS_CHILD | ES_LEFT | ES_WANTRETURN | WS_BORDER, CRect(), this, 0);
+	m_editor.Create(ES_AUTOHSCROLL | WS_CHILDWINDOW| ES_LEFT | ES_WANTRETURN | WS_BORDER, CRect(), this, 0);
+	m_editor.SetFont(m_list.GetFont());
+	GetDlgItem(IDC_BUTTON1)->EnableWindow(m_can_edit);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
 }
 
 
-//void CViewDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
-//{
-//	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-//	// TODO:  在此添加控件通知处理程序代码
-//	*pResult = 0;
-//}
-
 void CViewDlg::OnClickList1(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	if (pNMItemActivate->iSubItem==0 || !m_can_edit)return;
-
-	CRect rect;
 	int item = pNMItemActivate->iItem;
 	int sub_item = pNMItemActivate->iSubItem;
-	m_list.GetSubItemRect(item, sub_item, LVIR_LABEL, rect); //获取子表项的大小
-	rect.left += 1;
-	m_editor.MoveWindow(&rect);
-	m_editor.ShowWindow(SW_SHOW);
-	m_editor.m_n_item = item;
-	m_editor.m_n_sub_item = sub_item;
-	m_editor.SetWindowText(m_list.GetItemText(item,sub_item));//设置编辑框的内容为字表项的内容
-	m_editor.SetFocus();
-	m_editor.SetSel(-1);
+	//StartEdit(item, sub_item);
 	*pResult = 0;
 }
 
@@ -109,8 +95,10 @@ afx_msg LRESULT CViewDlg::OnEditLostFocus(WPARAM wParam, LPARAM lParam)
 {
 	CString str;
 	m_editor.ShowWindow(SW_HIDE);
+	m_list.EnableWindow();
 	m_editor.GetWindowTextW(str);
 	m_list.SetItemText(m_editor.m_n_item, m_editor.m_n_sub_item, str);
+	int n_max_itm = m_list.GetItemCount();
 	return 0;
 }
 
@@ -137,15 +125,6 @@ int CViewDlg::ShowDetail(bool bCanEdit, vector<CString> & title, vector<CString>
 }
 
 
-
-void CViewDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	// TODO:  在此添加控件通知处理程序代码
-	*pResult = 0;
-}
-
-
 void CViewDlg::OnDestroy()
 {
 	int L = m_p_data->size();
@@ -158,22 +137,40 @@ void CViewDlg::OnDestroy()
 	// TODO:  在此处添加消息处理程序代码
 }
 
-
-//void CViewDlg::OnSetfocusList1(NMHDR *pNMHDR, LRESULT *pResult)
-//{
-//	// TODO:  在此添加控件通知处理程序代码
-//	AfxMessageBox(_T(""));
-//	*pResult = 0;
-//}
-
-
 void CViewDlg::OnBnClickedButton1()
 {
 	OnOK();
 }
 
-
 void CViewDlg::OnBnClickedButton2()
 {
 	OnCancel();
+}
+
+void CViewDlg::StartEdit(int item, int sub_item)
+{
+	if (!m_can_edit)return;
+	m_list.EnableWindow(0);
+//	m_list.SetItemState(item, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
+	CRect rect;
+	m_list.GetSubItemRect(item, sub_item, LVIR_LABEL, rect); //获取子表项的大小
+	rect.left += 1;
+	rect.right += 2;
+	rect.bottom += 2;
+	m_editor.MoveWindow(&rect);
+	m_editor.ShowWindow(SW_SHOW);
+	m_editor.m_n_item = item;
+	m_editor.m_n_sub_item = sub_item;
+	m_editor.SetWindowText(m_list.GetItemText(item, sub_item));//设置编辑框的内容为字表项的内容
+	m_editor.SetFocus();
+	m_editor.SetSel(-1);
+}
+
+afx_msg LRESULT CViewDlg::OnPressEnter(WPARAM wParam, LPARAM lParam)
+{
+	POSITION pos = m_list.GetFirstSelectedItemPosition();
+	if (pos == NULL)return 0;
+	int nItem = m_list.GetNextSelectedItem(pos);
+	StartEdit(nItem, 1);
+	return 0;
 }

@@ -159,6 +159,7 @@
     <ClInclude Include="ListEditor.h" />
     <ClInclude Include="MFCApplication5.h" />
     <ClInclude Include="MFCApplication5Dlg.h" />
+    <ClInclude Include="MyList.h" />
     <ClInclude Include="python_support.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -171,6 +172,7 @@
     <ClCompile Include="ListEditor.cpp" />
     <ClCompile Include="MFCApplication5.cpp" />
     <ClCompile Include="MFCApplication5Dlg.cpp" />
+    <ClCompile Include="MyList.cpp" />
     <ClCompile Include="python_support.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -187,8 +189,11 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\Desktop\捕获.bmp" />
+    <Image Include="..\..\..\Desktop\bitbug_favicon.ico" />
     <Image Include="res\f14.ico" />
+    <Image Include="res\hd.ico" />
     <Image Include="res\icon1.ico" />
+    <Image Include="res\icon2.ico" />
     <Image Include="res\MFCApplication5.ico" />
     <Image Include="res\捕获.bmp" />
   </ItemGroup>

@@ -1,8 +1,10 @@
 import rpc
 import json
 import time
+import binascii
 ####### common userd function ###############################################
-DB_FILE='pieces.acc_db'
+DB_FILE='pieces.db1'
+HISTORY_FILE='history.acc_db'
 
 class writer():
 	def __init__(self):
@@ -11,6 +13,7 @@ class writer():
 		pass
 import sys
 sys.stderr=writer()
+
 #################################################
 def encrypt(s):
     import base64
@@ -23,10 +26,6 @@ def decrypt(s):
     s = s.encode()
     s = base64.b85decode(base64.a85decode(s))
     return s.decode()
-
-def save_pieces():
-	global g_pieces
-	json.dump(g_pieces,open('pieces.dat','w'))
 
 def save_one_piece(pc):
 	with open(DB_FILE,'a') as f:
@@ -47,9 +46,9 @@ def load_pieces():
 				else:
 					g_pieces[obj[0]]=obj
 	except:
-		load_pieces_old_db()
+		pass
 	print('操作记录%d条，实有数据%d条。'%(cnt,len(g_pieces)))
-	if cnt>len(g_pieces)*2 or cnt==0:#need compact or load old db.
+	if cnt>len(g_pieces)*2 :#need compact .
 		compact_db()
 
 def compact_db():
@@ -60,13 +59,7 @@ def compact_db():
 			f.write(json.dumps(pc)+'\n')
 	print('数据库压缩完成。')
 
-def load_pieces_old_db():
-	global g_pieces
-	try:
-		g_pieces=json.load(open('pieces.dat','r'))
-		print('导入旧版数据库记录%d条。'%(len(g_pieces)))
-	except:
-		pass
+
 ##############################################
 
 g_users={'gb1':['gb2',encrypt('123'),'耕保科'],
@@ -75,9 +68,9 @@ g_users={'gb1':['gb2',encrypt('123'),'耕保科'],
 'ly1':['ly2',encrypt('123'),'利用科'],
 'ly2':['ly3',encrypt('123'),'利用科'],
 'ly3':['cw',encrypt('123'),'利用科'],
-'dj1':['dj2',encrypt('123'),'地籍科'],
-'dj2':['dj3',encrypt('123'),'地籍科'],
-'dj3':['cw',encrypt('123'),'地籍科'],
+# 'dj1':['dj2',encrypt('123'),'地籍科'],
+# 'dj2':['dj3',encrypt('123'),'地籍科'],
+# 'dj3':['cw',encrypt('123'),'地籍科'],
 'bdc1':['bdc2',encrypt('123'),'不动产'],
 'bdc2':['bdc3',encrypt('123'),'不动产'],
 'bdc3':['cw',encrypt('123'),'不动产'],
@@ -86,20 +79,35 @@ g_users={'gb1':['gb2',encrypt('123'),'耕保科'],
 
 g_pieces=dict()
 table_heads=dict()
-table_heads['耕保科']=['批次号','省批复文号','座落位置','报批亩数','报批公顷数','农用地小计','耕地','建设用地','未利用地','社保资金','土地补偿费','地上附着物','青苗费','占补平衡指标','被征地村居','批复日期','图件信息','影像资料','备注']
-table_heads['利用科']=['受让方*','受让方法定代表人','土地位置*','土地面积（单位：平方米）','出让时间','出让总金额（单位：万元）','用途','年限','备注']
-table_heads['地籍科']=['出（转）让方*','出（转）让方法定代表人','受让方*','受让方法定代表人','土地位置*','土地面积（单位：平方米）','出（转）让时间','出（转）让总金额（单位：万元）','备注']
-table_heads['不动产']=['序号','座落','土地权利人','不动产证书号','使用权类型','用途','面积（㎡）','宗地编码','变更日期','备注']
+table_heads[0]=['所有数据（无详情）','']
+table_heads[1]=['耕地征用信息',['批次号','省批复文号','座落位置','报批亩数','报批公顷数','农用地小计','耕地','建设用地','未利用地','社保资金','土地补偿费','地上附着物','青苗费','占补平衡指标','被征地村居','批复日期','图件信息','影像资料','备注']]
+table_heads[2]=['国有土地出让信息',['受让方','受让方法定代表人','土地位置*','土地面积（单位：平方米）','出让时间','出让总金额（单位：万元）','用途','年限','备注']]
+table_heads[3]=['国有土地使用权出让转让合同',['出（转）让方','出（转）让方法定代表人','受让方','受让方法定代表人','土地位置','土地面积（单位：平方米）','出（转）让时间','出（转）让总金额（单位：万元）','备注']]
+table_heads[4]=['不动产登记发放信息',['序号','座落','土地权利人','不动产证书号','使用权类型','用途','面积（㎡）','宗地编码','变更日期','备注']]
+table_heads[5]=['国有土地使用权转让合同',['转让方','转让方法定代表人','受让方','受让方法定代表人','土地位置','土地面积（单位：平方米）','转让时间','转让总金额（单位：万元）','备注']]
+table_heads[6]=['国有土地使用权出让合同',['出让方','出让方法定代表人','受让方','受让方法定代表人','土地位置','土地面积（单位：平方米）','出让时间','出让总金额（单位：万元）','备注']]
 
+table_ids=dict()
+table_ids['耕保科']=[1]
+table_ids['利用科']=[2,6]
+table_ids['地籍科']=[3]
+table_ids['不动产']=[4,5]
+table_ids['财务科']=[0,1,2,4,5,6]
 svr=rpc.RpcSvr('0.0.0.0',9090)
 #%%
-def get_table_head(token):
+def get_tables_id_name(token):
 	name=decrypt(token)
 	if name not in g_users:
 		return []
 	department=g_users[name][2]
-	return table_heads.get(department,[])
+	ids=table_ids.get(department,[])
+	return [(x,table_heads[x][0]) for x in ids]
+svr.reg_fun(get_tables_id_name)
+
+def get_table_head(tid):
+	return table_heads[tid][1]
 svr.reg_fun(get_table_head)
+
 #%%
 def login(un,pw):
 	if un not in g_users:
@@ -153,7 +161,7 @@ def delete_piece(name,_id):#do not change id
 			return 1
 		if g_users[name][2]=='财务科':
 			#cw delete and save history.
-			with open('history.acc_db','a') as f:
+			with open(HISTORY_FILE,'a') as f:
 				f.write(json.dumps(pc)+'\n')
 			g_pieces.pop(_id)
 			save_one_piece(_id)
@@ -163,40 +171,52 @@ def delete_piece(name,_id):#do not change id
 		return 0
 svr.reg_fun(delete_piece)
 #%%
-def refresh(name):#do not change id
-	return [x for x in g_pieces.values() if x[2][-1]==name]
+def refresh(name,tid):#do not change id
+	return [x for x in g_pieces.values() if x[2][-1]==name and (tid==0 or x[3]==tid)]
 svr.reg_fun(refresh)
 #%%
 
 def get_export_data(token,b_history,t1,t2):
 	name=decrypt(token)
-	if not b_history:
+	if not b_history:#return current view data.
 		pcs=[x for x in g_pieces.values() if x[2][-1]==name]
-		ret=dict()
-		for pc in pcs:
-			dep=g_users[pc[1]][-1]
-			ret.setdefault(dep,[]).append(pc)
-		return ret
-	else:
+		return pcs
+	else:#return history data.
 		time1=time.strptime(t1,'%Y年%m月%d日')
 		time1=time.mktime(time1)
 		time2=time.strptime(t2,'%Y年%m月%d日')
 		time2=time.mktime(time2)
 		if time1>time2:
 			time1,time2=time2,time1
-		ret=dict()
 		try:
-			with open('history.acc_db','r') as f:
+			with open(HISTORY_FILE,'r') as f:
+				ret=[]
 				for ln in f:
 					pc=json.loads(ln)
-					if time1<float(pc[0])<time2+3600*24:
-						dep=g_users[pc[1]][-1]
-						ret.setdefault(dep,[]).append(pc)
+					if time1<float(pc[0])<time2+3600*24 and name in pc[2]:
+						ret.append(pc)
 			return ret
 		except:
 			return []
 svr.reg_fun(get_export_data)
 
+def download_export_template(crc):
+	crc=int(crc)
+	dat=open('templates\\export.xls','rb').read()
+	if crc==binascii.crc32(dat):
+		return 0
+	return dat
+svr.reg_fun(download_export_template)
+
+def download_import_template(tid):
+	fn='templates\\%d.xls' % (tid,)
+	with open(fn,'rb') as f:
+		return f.read()
+	return 0
+svr.reg_fun(download_import_template)
+
+
+
 load_pieces()
-print('数据服务V1.0.0.4正在运行中...')
+print('数据服务V1.0.0.8正在运行中...')
 svr.run(1)

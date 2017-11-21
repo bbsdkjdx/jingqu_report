@@ -4,6 +4,7 @@
 
 #pragma once
 #include "afxcmn.h"
+#include "afxwin.h"
 
 
 // CMFCApplication5Dlg ¶Ô»°¿ò
@@ -36,24 +37,26 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO* lpMMI);
-	afx_msg void OnBnClickedButton2();
+	afx_msg void OnExportXls();
 	afx_msg void OnSubmit();
-	afx_msg void OnBnClickedButton1();
-	afx_msg void OnRefresh();
+	afx_msg void OnImportXls();
+	afx_msg void OnGetTemplate();
 	afx_msg void OnDismiss();
-	afx_msg void OnBnClickedButton6();
+	afx_msg void OnDeleteItem();
 protected:
 	int ListBatchOperate(CString op);
 public:
-	afx_msg void OnBnClickedButton5();
+	afx_msg void OnNewOrEdit();
 	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnDblclkList1(NMHDR *pNMHDR, LRESULT *pResult);
 	void ShowSelectedItem(bool bCanEdit);
 	afx_msg void OnRclickList1(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnBnClickedButton8();
-protected:
-//	void ExportData(bool history);
-//	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+	afx_msg void OnExportHistory();
+
 public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	CComboBox m_table_id_ctrl;
+	afx_msg void OnSelchangeCombo1();
+
+	afx_msg void OnRefresh();
 };
