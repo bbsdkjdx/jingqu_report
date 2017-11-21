@@ -42,4 +42,9 @@ public:
 //	afx_msg void OnSetfocusList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButton1();
 	afx_msg void OnBnClickedButton2();
+//	afx_msg void OnLvnKeydownList1(NMHDR *pNMHDR, LRESULT *pResult);
+//	afx_msg void OnNMReturnList1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+//	afx_msg void OnEnterPressed();
+	void StartEdit(int item, int sub_item);
 };

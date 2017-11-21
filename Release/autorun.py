@@ -231,7 +231,9 @@ def get_import_template():
 		open(fn,'wb').write(dat.data)
 	msgbox('当前表格的模板已下载，请编辑并导入。')
 
-def GridRange(rgn):
+def GridRange(st,r0,c0,r1,c1):
+	s=chr(c0+64)+str(r0)+':'+chr(c1+64)+str(r1)
+	rgn=st.raw.Range(s)
 	for x in [7,8,9,10]:
 		bd=rgn.Borders(x)
 		bd.LineStyle=1
