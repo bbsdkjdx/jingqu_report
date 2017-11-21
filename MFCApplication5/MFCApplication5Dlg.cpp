@@ -47,14 +47,18 @@ int get_item_count()
 void delete_all_columns()
 {
 	if (!g_p_dlg)return;
-	g_p_dlg->DeleteAllColumns();
+	int nColumnCount = g_p_dlg->m_list.GetHeaderCtrl()->GetItemCount();
+	for (int i = 0; i < nColumnCount; i++)
+	{
+		g_p_dlg->m_list.DeleteColumn(0);
+	}
 }
 
 void insert_column(int n, WCHAR *s, int width)
 {
 	if (g_p_dlg)
 	{
-		g_p_dlg->InsertColumn(n, s, width);
+		g_p_dlg->m_list.InsertColumn(n, s, 0, width);
 	}
 }
 
@@ -62,7 +66,8 @@ void insert_combo_data(int n, WCHAR *s, int id)
 {
 	if (g_p_dlg)
 	{
-		g_p_dlg->InsertComboData(n, s, id);
+		g_p_dlg->m_table_id_ctrl.InsertString(n, s);
+		g_p_dlg->m_table_id_ctrl.SetItemData(n, id);
 	}
 }
 
@@ -132,6 +137,7 @@ BEGIN_MESSAGE_MAP(CMFCApplication5Dlg, CDialogEx)
 	ON_NOTIFY(NM_RCLICK, IDC_LIST1, &CMFCApplication5Dlg::OnRclickList1)
 	ON_BN_CLICKED(IDC_BUTTON8, &CMFCApplication5Dlg::OnExportHistory)
 	ON_CBN_SELCHANGE(IDC_COMBO1, &CMFCApplication5Dlg::OnSelchangeCombo1)
+	ON_BN_CLICKED(IDC_BUTTON9, &CMFCApplication5Dlg::OnRefresh)
 END_MESSAGE_MAP()
 
 
@@ -260,7 +266,7 @@ HCURSOR CMFCApplication5Dlg::OnQueryDragIcon()
 
 
 int reloc_ctrl[] =//controls need to relocate when resizing window.
-{ IDC_BUTTON1, IDC_BUTTON2, IDC_BUTTON3, IDC_BUTTON4, IDC_BUTTON5, IDC_BUTTON6, IDC_BUTTON7, IDC_BUTTON8,IDC_COMBO1};
+{ IDC_BUTTON1, IDC_BUTTON2, IDC_BUTTON3, IDC_BUTTON4, IDC_BUTTON5, IDC_BUTTON6, IDC_BUTTON7, IDC_BUTTON8, IDC_BUTTON9,IDC_COMBO1 };
 
 void CMFCApplication5Dlg::OnSize(UINT nType, int cx, int cy)
 {
@@ -506,26 +512,8 @@ void CMFCApplication5Dlg::OnSelchangeCombo1()
 }
 
 
-void CMFCApplication5Dlg::DeleteAllColumns()
+
+void CMFCApplication5Dlg::OnRefresh()
 {
-	int nColumnCount = m_list.GetHeaderCtrl()->GetItemCount();
-
-	// Delete all of the columns. 
-	for (int i = 0; i < nColumnCount; i++)
-	{
-		m_list.DeleteColumn(0);
-	}
-}
-
-
-void CMFCApplication5Dlg::InsertColumn(int n, WCHAR* s, int width)
-{
-	m_list.InsertColumn(n, s, 0, width);
-}
-
-
-void CMFCApplication5Dlg::InsertComboData(int n, WCHAR* s, int id)
-{
-	m_table_id_ctrl.InsertString(n, s);
-	m_table_id_ctrl.SetItemData(n, id);
+	PyExecA("autorun.refresh()");
 }

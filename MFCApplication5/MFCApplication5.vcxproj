@@ -159,6 +159,7 @@
     <ClInclude Include="ListEditor.h" />
     <ClInclude Include="MFCApplication5.h" />
     <ClInclude Include="MFCApplication5Dlg.h" />
+    <ClInclude Include="MyList.h" />
     <ClInclude Include="python_support.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -171,6 +172,7 @@
     <ClCompile Include="ListEditor.cpp" />
     <ClCompile Include="MFCApplication5.cpp" />
     <ClCompile Include="MFCApplication5Dlg.cpp" />
+    <ClCompile Include="MyList.cpp" />
     <ClCompile Include="python_support.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

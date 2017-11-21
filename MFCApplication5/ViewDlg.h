@@ -2,6 +2,7 @@
 #include "afxcmn.h"
 #include "ListEditor.h"
 #include <vector>
+#include "MyList.h"
 
 
 // CViewDlg ¶Ô»°¿ò
@@ -24,7 +25,7 @@ protected:
 public:
 	afx_msg void OnBnClickedOk();
 	virtual BOOL OnInitDialog();
-	CListCtrl m_list;
+	CMyList m_list;
 	CListEditor m_editor;
 	vector<CString> *m_p_title;
 	vector<CString> *m_p_data;
@@ -47,4 +48,7 @@ public:
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 //	afx_msg void OnEnterPressed();
 	void StartEdit(int item, int sub_item);
+	afx_msg void OnEndscrollList1(NMHDR *pNMHDR, LRESULT *pResult);
+protected:
+	afx_msg LRESULT OnPressEnter(WPARAM wParam, LPARAM lParam);
 };

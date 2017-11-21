@@ -52,14 +52,11 @@ public:
 	void ShowSelectedItem(bool bCanEdit);
 	afx_msg void OnRclickList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnExportHistory();
-protected:
-//	void ExportData(bool history);
-//	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+
 public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	CComboBox m_table_id_ctrl;
 	afx_msg void OnSelchangeCombo1();
-	void DeleteAllColumns();
-	void InsertColumn(int n, WCHAR* s, int width);
-	void InsertComboData(int n, WCHAR* s, int id);
+
+	afx_msg void OnRefresh();
 };
