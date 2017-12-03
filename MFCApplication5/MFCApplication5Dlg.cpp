@@ -71,6 +71,11 @@ void insert_combo_data(int n, WCHAR *s, int id)
 	}
 }
 
+WCHAR *get_resource(int x)
+{
+	return MAKEINTRESOURCE(x);
+}
+
 class CAboutDlg : public CDialogEx
 {
 public:
@@ -85,6 +90,9 @@ public:
 // 实现
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnBnClickedOk();
+	virtual BOOL OnInitDialog();
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
@@ -97,6 +105,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
+	ON_BN_CLICKED(IDOK, &CAboutDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
@@ -208,7 +217,7 @@ BOOL CMFCApplication5Dlg::OnInitDialog()
 	REG_EXE_FUN(delete_all_columns, "#", "");
 	REG_EXE_FUN(insert_column, "#lSl", "");
 	REG_EXE_FUN(insert_combo_data, "#lSl", "");
-
+	REG_EXE_FUN(get_resource, "Sl", "");
 	//fill tables combobox.
 	PyEvalW(_T("autorun.fill_table_combo()"));
 	m_table_id_ctrl.SetCurSel(0);
@@ -266,7 +275,7 @@ HCURSOR CMFCApplication5Dlg::OnQueryDragIcon()
 
 
 int reloc_ctrl[] =//controls need to relocate when resizing window.
-{ IDC_BUTTON1, IDC_BUTTON2, IDC_BUTTON3, IDC_BUTTON4, IDC_BUTTON5, IDC_BUTTON6, IDC_BUTTON7, IDC_BUTTON8, IDC_BUTTON9,IDC_COMBO1 };
+{ IDC_BUTTON1, IDC_BUTTON2, IDC_BUTTON3, IDC_BUTTON4, IDC_BUTTON5, IDC_BUTTON6, IDC_BUTTON7, IDC_BUTTON8, IDC_COMBO1 };
 
 void CMFCApplication5Dlg::OnSize(UINT nType, int cx, int cy)
 {
@@ -279,7 +288,7 @@ void CMFCApplication5Dlg::OnSize(UINT nType, int cx, int cy)
 		CWnd *pwnd = GetDlgItem(cid);
 		if (!pwnd)
 		{
-			return;
+			continue;
 		}
 		pwnd->GetWindowRect(&rct);
 		ScreenToClient(&rct);
@@ -516,4 +525,58 @@ void CMFCApplication5Dlg::OnSelchangeCombo1()
 void CMFCApplication5Dlg::OnRefresh()
 {
 	PyExecA("autorun.refresh()");
+}
+
+
+void CAboutDlg::OnBnClickedOk()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	CDialogEx::OnOK();
+}
+
+
+BOOL CAboutDlg::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+	// TODO:  在此添加额外的初始化
+	TCHAR szFullPath[MAX_PATH];
+	DWORD dwVerInfoSize = 0;
+	DWORD dwVerHnd;
+	VS_FIXEDFILEINFO * pFileInfo;
+
+	GetModuleFileName(NULL, szFullPath, sizeof(szFullPath));
+	dwVerInfoSize = GetFileVersionInfoSize(szFullPath, &dwVerHnd);
+	if (dwVerInfoSize)
+	{
+		// If we were able to get the information, process it:
+		HANDLE  hMem;
+		LPVOID  lpvMem;
+		unsigned int uInfoSize = 0;
+
+		hMem = GlobalAlloc(GMEM_MOVEABLE, dwVerInfoSize);
+		lpvMem = GlobalLock(hMem);
+		GetFileVersionInfo(szFullPath, dwVerHnd, dwVerInfoSize, lpvMem);
+
+		::VerQueryValue(lpvMem, (LPTSTR)_T("\\"), (void**)&pFileInfo, &uInfoSize);
+
+			int ret = GetLastError();
+		WORD m_nProdVersion[4];
+
+		// Product version from the FILEVERSION of the version info resource 
+		m_nProdVersion[0] = HIWORD(pFileInfo->dwProductVersionMS);
+		m_nProdVersion[1] = LOWORD(pFileInfo->dwProductVersionMS);
+		m_nProdVersion[2] = HIWORD(pFileInfo->dwProductVersionLS);
+		m_nProdVersion[3] = LOWORD(pFileInfo->dwProductVersionLS);
+
+		CString strVersion;
+		strVersion.Format(_T("土地数据上报系统 %d.%d.%d.%d版"), m_nProdVersion[0],
+			m_nProdVersion[1], m_nProdVersion[2], m_nProdVersion[3]);
+
+		GlobalUnlock(hMem);
+		GlobalFree(hMem);
+		GetDlgItem(IDC_STATIC)->SetWindowText(strVersion);
+	}
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// 异常:  OCX 属性页应返回 FALSE
 }
