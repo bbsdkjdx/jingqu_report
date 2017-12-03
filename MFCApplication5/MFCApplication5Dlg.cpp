@@ -71,10 +71,6 @@ void insert_combo_data(int n, WCHAR *s, int id)
 	}
 }
 
-WCHAR *get_resource(int x)
-{
-	return MAKEINTRESOURCE(x);
-}
 
 class CAboutDlg : public CDialogEx
 {
@@ -210,14 +206,13 @@ BOOL CMFCApplication5Dlg::OnInitDialog()
 	m_list.SetWindowPos(0, 0, 0, rct.Width(), rct.Height()-h-10, SWP_NOOWNERZORDER);
 
 	//reg functions for python.
-	REG_EXE_FUN(delete_all_items, "#", "");
+	REG_EXE_FUN(delete_all_items, "#", "void delete_all_items()");
 	REG_EXE_FUN(insert_item, "#lS", "void insert_item(int n, WCHAR *str)");
-	REG_EXE_FUN(set_item_text, "#llS", "");
-	REG_EXE_FUN(get_item_count, "l", "");
-	REG_EXE_FUN(delete_all_columns, "#", "");
-	REG_EXE_FUN(insert_column, "#lSl", "");
-	REG_EXE_FUN(insert_combo_data, "#lSl", "");
-	REG_EXE_FUN(get_resource, "Sl", "");
+	REG_EXE_FUN(set_item_text, "#llS", "void set_item_text(int n, int nsub, WCHAR *str)");
+	REG_EXE_FUN(get_item_count, "l", "int get_item_count()");
+	REG_EXE_FUN(delete_all_columns, "#", "void delete_all_columns()");
+	REG_EXE_FUN(insert_column, "#lSl", "void insert_column(int n, WCHAR *s, int width)");
+	REG_EXE_FUN(insert_combo_data, "#lSl", "void insert_combo_data(int n, WCHAR *s, int id)");
 	//fill tables combobox.
 	PyEvalW(_T("autorun.fill_table_combo()"));
 	m_table_id_ctrl.SetCurSel(0);
