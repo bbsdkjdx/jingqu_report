@@ -7,11 +7,20 @@ PyObject  *pModule = nullptr;
 
 char *pre_code =
 "import ctypes,os\n"
+
+//stack to transform parameters between exe and python.
+"stack__=[0]*50\n"
+
+//show message box before foreground window.
 "def msgbox(s,title=''):\n"
 " ctypes.windll.user32.MessageBoxW(ctypes.windll.user32.GetForegroundWindow(),str(s),title,0x40)\n"
-"exe_fun__ = dict()\n"
-"py_fun__ = dict()\n"
-"stack__=[0]*50\n"
+
+//define exe funciton management class,exe is the object,type it can see all functions.
+"class CEXEFUN(object):\n"
+"    def __repr__(self):\n"
+"        dic=self.__dict__\n"
+"        return '\\n**************************************************\\n'.join((x+':\\n'+dic[x].__doc__ for x in dic))\n"
+"exe=CEXEFUN()\n"
 "def build_exe_fun__(fnn, fmt, adr,doc):\n"
 "    dic = {'#': 'ctypes.c_void_p', \n"
 "           's':'ctypes.c_char_p','S': 'ctypes.c_wchar_p',\n"
@@ -21,20 +30,12 @@ char *pre_code =
 "    cmd = 'ctypes.CFUNCTYPE('\n"
 "    cmd += ','.join(map(lambda x: dic[x], fmt))\n"
 "    cmd += ')('+str(adr)+')'\n"
-"    exe_fun__[fnn] = eval(cmd)\n"
-"    exe_fun__[fnn].__doc__=doc\n"
-"def on_msg__(s, p1, p2):\n"
-"    if s not in py_fun__:\n"
-"        msgbox('\"'+s+'\" not handled.')\n"
-"        return\n"
-"    try:\n"
-"        py_fun__[s](p1, p2)\n"
-"    except:\n"
-"        pass\n";
-
+"    exe.__dict__[fnn] = eval(cmd)\n"
+"    exe.__dict__[fnn].__doc__=doc\n"
+;
 void _init_python()//call it before use other function else.
 {
-	Py_Initialize();
+	Py_Initialize(); 
 	Py_SetProgramName(_T(""));  /* optional but recommended */ //define APP_NAME first.
 	//makes sys.argv availiable.
 	LPTSTR cmd = ::GetCommandLine();
@@ -204,7 +205,7 @@ void PySendMsg(char *msg, unsigned int p1,unsigned int p2)
 void InteractInConsole()
 {
 	AllocConsole();
-	SetConsoleTitleA("内嵌测试控制台");
+	SetConsoleTitleA("press Ctrl+C to quit.");
 
 	HWND hwn = ::GetConsoleWindow();
 	if (hwn)
@@ -220,7 +221,7 @@ void InteractInConsole()
 	DWORD dwCount = 0;//已输入数
 	HANDLE hdlRead = GetStdHandle(STD_INPUT_HANDLE);
 	HANDLE hdlWrite = GetStdHandle(STD_OUTPUT_HANDLE);
-	WriteConsole(hdlWrite, _T("press Ctrl+C to quit.\n"), 22, NULL, NULL);
+//	WriteConsole(hdlWrite, _T("press Ctrl+C to quit.\n"), 22, NULL, NULL);
 	while (1)
 	{
 		WriteConsole(hdlWrite, _T(">>"), 2, NULL, NULL);
@@ -231,6 +232,10 @@ void InteractInConsole()
 		}
 		Buffer[dwCount - 2] = 0;//delete '\n\r'
 		TCHAR *ptc = PyEvalOrExecW(Buffer);
+		if (ptc[0]==0)
+		{
+			continue;
+		}
 		WriteConsole(hdlWrite, ptc, wcslen(ptc), NULL, NULL);
 		WriteConsole(hdlWrite, _T("\n"), 1, NULL, NULL);
 	}

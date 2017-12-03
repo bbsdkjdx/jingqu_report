@@ -9,7 +9,7 @@ import binascii
 import win32tools
 exe_dir=os.getcwd()
 socket.setdefaulttimeout(1)
-msgbox = lambda s: ctypes.windll.user32.MessageBoxW(ctypes.windll.user32.GetForegroundWindow(), str(s), '', 0)
+msgbox = __main__.msgbox
 
 class CGlobal(object):
 	pass
@@ -75,14 +75,14 @@ def login():
 def fill_table_combo():
 	ids=g_.cln.get_tables_id_name(g_.token)
 	for n,(_id,name) in enumerate(ids):
-		__main__.exe_fun__['insert_combo_data'](n,name,_id)
+		__main__.exe.insert_combo_data(n,name,_id)
 	return ids
 
 def switch_table():
 	g_.tid=__main__.stack__[0]
 	th=g_.cln.get_table_head(g_.tid)
-	__main__.exe_fun__['delete_all_columns']()
-	insert_column=__main__.exe_fun__['insert_column']
+	__main__.exe.delete_all_columns()
+	insert_column=__main__.exe.insert_column
 	insert_column(0,'流水号',0)
 	insert_column(1,'数据来源',100)
 	insert_column(2,'数据状态',100)
@@ -114,12 +114,12 @@ def get_piece_status(frm,pth):
 
 def grid_append_piece(piece):
 	_id,frm,pth,_tid,info=piece
-	cnt=__main__.exe_fun__['get_item_count']()
-	__main__.exe_fun__['insert_item'](cnt,_id)
-	__main__.exe_fun__['set_item_text'](cnt,1,frm)
-	__main__.exe_fun__['set_item_text'](cnt,2,get_piece_status(frm,pth))
+	cnt=__main__.exe.get_item_count()
+	__main__.exe.insert_item(cnt,_id)
+	__main__.exe.set_item_text(cnt,1,frm)
+	__main__.exe.set_item_text(cnt,2,get_piece_status(frm,pth))
 	for n,x in enumerate(info,3):
-		__main__.exe_fun__['set_item_text'](cnt,n,x)
+		__main__.exe.set_item_text(cnt,n,x)
 
 def submit_piece(_id):
 	g_.cln.submit_piece(g_.user_name,_id)
@@ -132,7 +132,7 @@ def delete_piece(_id):
 
 def refresh():
 	pcs=g_.cln.refresh(g_.user_name,g_.tid)
-	__main__.exe_fun__['delete_all_items']()
+	__main__.exe.delete_all_items()
 	for pc in pcs:
 		grid_append_piece(pc)
 	return pcs
